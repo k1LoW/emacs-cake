@@ -16,7 +16,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ;;
-;; Version: 1.1.6
+;; Version: 1.1.7
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; 1.1.7:New valiables anything-c-source-cake-component-function
 ;; 1.1.6:add migemo.
 ;; 1.1.5:grep command bug fix.
 ;; 1.1.4:New function anything-c-cake-anything-only-po. Fix doc.
@@ -163,6 +164,25 @@
                                (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
      )))
 
+(defvar anything-c-source-cake-component-function
+  '((name . "Cake Component Function Switch")
+    (init
+     . (lambda ()
+         (if
+             (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
+             (call-process-shell-command
+              (concat "grep '[^_]function' " cake-app-path "controllers/components/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'") nil (anything-candidate-buffer 'global))
+           (call-process-shell-command nil nil (anything-candidate-buffer 'global))
+           )))
+    (candidates-in-buffer)
+    (display-to-real . anything-c-cake-set-names2)
+    (action
+     ("Switch to Function" . (lambda (candidate)
+                               (anything-c-cake-switch-to-model)
+                               (goto-char (point-min))
+                               (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
+     )))
+
 (defun anything-c-cake-set-names2 (candidate)
   "Set names by display-to-real"
   (progn
@@ -232,7 +252,10 @@
 (defun anything-c-cake-anything-only-source-cake ()
   "anything only anything-c-source-cake and anything-c-source-cake-model-function."
   (interactive)
-  (anything (list anything-c-source-cake anything-c-source-cake-model-function) nil "Find CakePHP Sources: " nil nil))
+  (anything (list anything-c-source-cake
+                  anything-c-source-cake-model-function
+                  anything-c-source-cake-component-function)
+            nil "Find CakePHP Sources: " nil nil))
 
 (defun anything-c-cake-anything-only-model-function ()
   "anything only anything-c-source-cake-model-function."

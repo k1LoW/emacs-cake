@@ -1,4 +1,4 @@
-;;; inflector.el ---
+;;; cake-inflector.el ---
 
 ;; Copyright (C) 2008 by 101000code/101000LAB
 ;;
@@ -342,6 +342,6 @@
     ("s$" ""))
   "cakeSingularRules")
 
-(provide 'inflector)
+(provide 'cake-inflector)
 ;;; end
-;;; inflector.el ends here
+;;; cake-inflector.el ends here
