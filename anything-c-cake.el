@@ -183,6 +183,25 @@
                                (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
      )))
 
+(defvar anything-c-source-cake-behavior-function
+  '((name . "Cake Behavior Function Switch")
+    (init
+     . (lambda ()
+         (if
+             (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
+             (call-process-shell-command
+              (concat "grep '[^_]function' " cake-app-path "models/behaviors/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'") nil (anything-candidate-buffer 'global))
+           (call-process-shell-command nil nil (anything-candidate-buffer 'global))
+           )))
+    (candidates-in-buffer)
+    (display-to-real . anything-c-cake-set-names2)
+    (action
+     ("Switch to Function" . (lambda (candidate)
+                               (anything-c-cake-switch-to-model)
+                               (goto-char (point-min))
+                               (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
+     )))
+
 (defun anything-c-cake-set-names2 (candidate)
   "Set names by display-to-real"
   (progn
