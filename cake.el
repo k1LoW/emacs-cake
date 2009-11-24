@@ -163,7 +163,7 @@
 ;;; Code:
 
 ;;require
-(require 'inflector)
+(require 'cake-inflector)
 (require 'cl)
 (require 'anything)
 (require 'easy-mmode)
