@@ -76,9 +76,14 @@
      . (lambda ()
          (if
              (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
-             (call-process-shell-command
-              (concat "grep '[^_]function' " cake-app-path "controllers/*controller.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)_controller\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'") nil (anything-candidate-buffer 'global))
-           (call-process-shell-command nil nil (anything-candidate-buffer 'global))
+             (with-current-buffer (anything-candidate-buffer 'local)
+               (call-process-shell-command
+                (concat "grep '[^_]function' "
+                        cake-app-path
+                        "controllers/*controller.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)_controller\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                nil (current-buffer)))
+           (with-current-buffer (anything-candidate-buffer 'local)
+             (call-process-shell-command nil nil (current-buffer)))
            )))
     (candidates-in-buffer)
     (display-to-real . anything-c-cake-set-names)
@@ -170,9 +175,14 @@
      . (lambda ()
          (if
              (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
-             (call-process-shell-command
-              (concat "grep '[^_]function' " cake-app-path "models/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'") nil (anything-candidate-buffer 'global))
-           (call-process-shell-command nil nil (anything-candidate-buffer 'global))
+             (with-current-buffer (anything-candidate-buffer 'local)
+               (call-process-shell-command
+                (concat "grep '[^_]function' "
+                        cake-app-path
+                        "models/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                nil (current-buffer)))
+           (with-current-buffer (anything-candidate-buffer 'local)
+             (call-process-shell-command nil nil (current-buffer)))
            )))
     (candidates-in-buffer)
     (display-to-real . anything-c-cake-set-names2)
@@ -189,9 +199,14 @@
      . (lambda ()
          (if
              (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
-             (call-process-shell-command
-              (concat "grep '[^_]function' " cake-app-path "controllers/components/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'") nil (anything-candidate-buffer 'global))
-           (call-process-shell-command nil nil (anything-candidate-buffer 'global))
+             (with-current-buffer (anything-candidate-buffer 'local)
+               (call-process-shell-command
+                (concat "grep '[^_]function' "
+                        cake-app-path
+                        "controllers/components/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                nil (current-buffer)))
+           (with-current-buffer (anything-candidate-buffer 'local)
+             (call-process-shell-command nil nil (current-buffer)))
            )))
     (candidates-in-buffer)
     (display-to-real . anything-c-cake-set-names2)
@@ -206,9 +221,14 @@
      . (lambda ()
          (if
              (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
-             (call-process-shell-command
-              (concat "grep '[^_]function' " cake-app-path "models/behaviors/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'") nil (anything-candidate-buffer 'global))
-           (call-process-shell-command nil nil (anything-candidate-buffer 'global))
+             (with-current-buffer (anything-candidate-buffer 'local)
+               (call-process-shell-command
+                (concat "grep '[^_]function' "
+                        cake-app-path
+                        "models/behaviors/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                nil (current-buffer)))
+           (with-current-buffer (anything-candidate-buffer 'local)
+             (call-process-shell-command nil nil (current-buffer)))
            )))
     (candidates-in-buffer)
     (display-to-real . anything-c-cake-set-names2)
