@@ -16,7 +16,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ;;
-;; Version: 1.1.7
+;; Version: 1.1.8
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; 1.1.8:Bug fix.
 ;; 1.1.7:New valiables anything-c-source-cake-component-function
 ;; 1.1.6:add migemo.
 ;; 1.1.5:grep command bug fix.
@@ -64,7 +65,7 @@
 (require 'anything)
 (require 'cake)
 
-(defvar cake-model-function-name nil)
+(defvar cake-candidate-function-name nil)
 
 (defvar anything-c-cake-po-file-buffer-name "*Cake Po*")
 
@@ -106,8 +107,7 @@
       (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
     (if (y-or-n-p "Make new file?")
         (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-      (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php")))))
-  (message "Can't find model name."))
+      (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
 (defun anything-c-cake-switch-to-view ()
   "Switch to view."
@@ -145,6 +145,14 @@
           (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
 
+(defun anything-c-cake-switch-to-component ()
+  "Switch to component."
+  (if (file-exists-p (concat cake-app-path "controllers/components/" cake-singular-name ".php"))
+      (find-file (concat cake-app-path "controllers/components/" cake-singular-name ".php"))
+    (if (y-or-n-p "Make new file?")
+        (find-file (concat cake-app-path "controllers/components/" cake-singular-name ".php"))
+      (message (format "Can't find %s" (concat cake-app-path "controllers/components/" cake-singular-name ".php"))))))
+
 (defvar anything-c-source-cake-model-function
   '((name . "Cake Model Function Switch")
     (init
@@ -161,7 +169,7 @@
      ("Switch to Function" . (lambda (candidate)
                                (anything-c-cake-switch-to-model)
                                (goto-char (point-min))
-                               (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
+                               (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
      )))
 
 (defvar anything-c-source-cake-component-function
@@ -178,9 +186,9 @@
     (display-to-real . anything-c-cake-set-names2)
     (action
      ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-model)
+                               (anything-c-cake-switch-to-component)
                                (goto-char (point-min))
-                               (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
+                               (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
      )))
 
 (defun anything-c-cake-set-names2 (candidate)
@@ -188,7 +196,7 @@
   (progn
     (string-match "\\(.+\\) / \\(.+\\)" candidate)
     (setq cake-singular-name (match-string 1 candidate))
-    (setq cake-model-function-name (match-string 2 candidate))
+    (setq cake-candidate-function-name (match-string 2 candidate))
     ))
 
 (defun anything-c-cake-create-po-file-buffer ()
