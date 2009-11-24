@@ -145,13 +145,23 @@
           (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
 
-(defun anything-c-cake-switch-to-component ()
-  "Switch to component."
-  (if (file-exists-p (concat cake-app-path "controllers/components/" cake-singular-name ".php"))
-      (find-file (concat cake-app-path "controllers/components/" cake-singular-name ".php"))
+(defun anything-c-cake-switch-to-model ()
+  "Switch to model."
+  (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
+      (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
     (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "controllers/components/" cake-singular-name ".php"))
-      (message (format "Can't find %s" (concat cake-app-path "controllers/components/" cake-singular-name ".php"))))))
+        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+      (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
+
+(defun anything-c-cake-switch-to-file-function (dir)
+  "Switch to file and search function."
+  (if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
+      (if (y-or-n-p "Make new file?")
+          (find-file (concat cake-app-path dir cake-singular-name ".php"))
+        (message (format "Can't find %s" (concat cake-app-path dir cake-singular-name ".php"))))
+    (find-file (concat cake-app-path dir cake-singular-name ".php"))
+    (goto-char (point-min))
+    (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
 
 (defvar anything-c-source-cake-model-function
   '((name . "Cake Model Function Switch")
@@ -186,9 +196,7 @@
     (display-to-real . anything-c-cake-set-names2)
     (action
      ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-component)
-                               (goto-char (point-min))
-                               (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
+                               (anything-c-cake-switch-to-file-function "controllers/components/")))
      )))
 
 (defvar anything-c-source-cake-behavior-function
@@ -205,9 +213,7 @@
     (display-to-real . anything-c-cake-set-names2)
     (action
      ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-model)
-                               (goto-char (point-min))
-                               (re-search-forward (concat "function[ \t]*" cake-model-function-name "[ \t]*\(") nil t)))
+                               (anything-c-cake-switch-to-file-function "models/behaviors/")))
      )))
 
 (defun anything-c-cake-set-names2 (candidate)
