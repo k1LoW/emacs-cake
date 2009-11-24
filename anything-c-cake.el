@@ -16,7 +16,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ;;
-;; Version: 1.1.8
+;; Version: 1.1.9
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -37,8 +37,9 @@
 ;;
 
 ;; Change Log
+;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
 ;; 1.1.8:Bug fix.
-;; 1.1.7:New valiables anything-c-source-cake-component-function
+;; 1.1.7:New valiables anything-c-source-cake-component-function.
 ;; 1.1.6:add migemo.
 ;; 1.1.5:grep command bug fix.
 ;; 1.1.4:New function anything-c-cake-anything-only-po. Fix doc.
@@ -48,7 +49,7 @@
 ;; 1.1.0:Refactor code.
 ;; 1.0.9:grep command bug fix.
 ;; 1.0.8:anything-c-cake-anything-only-source-cake bug fix.
-;; 1.0.7:New function anything-c-cake-anything-only-model-function
+;; 1.0.7:New function anything-c-cake-anything-only-model-function.
 ;; 1.0.6:New valiables anything-c-source-cake-model-function.
 ;; 1.0.5:anything-c-cake-anything-only-source-cake関数を実装
 ;; 1.0.4:executable-findを導入
@@ -287,7 +288,8 @@
   (interactive)
   (anything (list anything-c-source-cake
                   anything-c-source-cake-model-function
-                  anything-c-source-cake-component-function)
+                  anything-c-source-cake-component-function
+                  anything-c-source-cake-behavior-function)
             nil "Find CakePHP Sources: " nil nil))
 
 (defun anything-c-cake-anything-only-model-function ()
