@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:New valiables anything-c-source-cake-po-not-found.
 ;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
 ;; 1.1.8:Bug fix.
 ;; 1.1.7:New valiables anything-c-source-cake-component-function.
@@ -296,6 +297,21 @@
                          (re-search-forward (concat "\"" (anything-c-cake-get-msgid candidate) "\"") nil t)))
      )))
 
+(defvar anything-c-source-cake-po-not-found
+  '((name . "Create __()")
+    (dummy)
+    (action
+     ("Insert __('msgid')." . (lambda (candidate)
+                                (insert (concat "__('" candidate "')"))))
+     ("Insert __('msgid',true)." . (lambda (candidate)
+                                     (insert (concat "__('" candidate "',true)"))))
+     ("Insert msgid." . (lambda (candidate)
+                          (insert candidate)))
+     ("Goto po file" . (lambda (candidate)
+                         (find-file (concat cake-app-path "locale/" cake-po-file-path))
+                         (goto-char (point-max)))
+     ))))
+
 (defun anything-c-cake-get-msgid (candidate)
   "Set msgid"
   (progn
@@ -322,7 +338,9 @@
   "anything only anything-c-source-cake-po."
   (interactive)
   (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
-    (anything '(anything-c-source-cake-po) initial-pattern "Find Msgid And Msgstr: " nil)))
+    (anything (list anything-c-source-cake-po
+                    anything-c-source-cake-po-not-found)
+              initial-pattern "Find Msgid And Msgstr: " nil)))
 
 (define-key cake-key-map "\C-cl" 'anything-c-cake-anything-only-source-cake)
 (define-key cake-key-map "\C-co" 'anything-c-cake-anything-only-model-function)
