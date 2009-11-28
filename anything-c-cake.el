@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Use Basic Regular Expressions for Mac sed.
 ;; -.-.-:New valiables anything-c-source-cake-po-not-found.
 ;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
 ;; 1.1.8:Bug fix.
@@ -81,7 +82,7 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "controllers/*controller.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)_controller\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                        "controllers/*controller.php --with-filename | sed 's/..*\\/\\(..*\\)_controller\\.php:.*function *\\([^ ][^ ]*\\) *(.*).*/\\1 \\/ \\2/g'")
                 nil (current-buffer)))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
@@ -180,7 +181,7 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "models/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                        "models/*.php --with-filename | sed 's/..*\\/\\(..*\\)\\.php:.*function *\\([^ ][^ ]*\\) *(.*).*/\\1 \\/ \\2/g'")
                 nil (current-buffer)))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
@@ -204,7 +205,7 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "controllers/components/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
+                        "controllers/components/*.php --with-filename | sed 's/..*\\/\\(..*\\)\\.php:.*function *\\([^ ][^ ]*\\) *(.*).*/\\1 \\/ \\2/g'")
                 nil (current-buffer)))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
