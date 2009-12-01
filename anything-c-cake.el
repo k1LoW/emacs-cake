@@ -53,15 +53,15 @@
 ;; 1.0.8:anything-c-cake-anything-only-source-cake bug fix.
 ;; 1.0.7:New function anything-c-cake-anything-only-model-function.
 ;; 1.0.6:New valiables anything-c-source-cake-model-function.
-;; 1.0.5:anything-c-cake-anything-only-source-cake関数を実装
-;; 1.0.4:executable-findを導入
-;; 1.0.3:cake.el 0.1.5に対応
-;; 1.0.2:action(function)がprivateやpublic指定されていた場合表示が崩れるバグを修正
-;; 1.0.1:anything-c-cake-set-namesでcake-singular-nameが空白になるバグ修正
-;; 1.0.0:action "Switch to Controller","Switch to View","Switch to Model"作成
+;; 1.0.5:anything-c-cake-anything-only-source-cake
+;; 1.0.4:executable-find
+;; 1.0.3:cake.el 0.1.5
+;; 1.0.2:action(function)がprivateやpublic
+;; 1.0.1:anything-c-cake-set-namesでcake-singular-name
+;; 1.0.0:action "Switch to Controller","Switch to View","Switch to Model"
 
 ;; TODO
-;; anyhing-c-cake-switch-to-*がcake-switch-to-*に似ているのでなんとか小さくしたい
+;; anyhing-c-cake-switch-to-*がcake-switch-to-*が似ているので修正したい
 
 ;;; Code:
 
@@ -82,8 +82,11 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "controllers/*controller.php --with-filename | sed 's/..*\\/\\(..*\\)_controller\\.php:.*function *\\([^ ][^ ]*\\) *(.*).*/\\1 \\/ \\2/g'")
-                nil (current-buffer)))
+                        "controllers/*controller.php --with-filename")
+                nil (current-buffer))
+               (goto-char (point-min))
+               (while (re-search-forward "..*\\/\\(..*\\)_controller\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -311,7 +314,7 @@
      ("Goto po file" . (lambda (candidate)
                          (find-file (concat cake-app-path "locale/" cake-po-file-path))
                          (goto-char (point-max)))
-     ))))
+      ))))
 
 (defun anything-c-cake-get-msgid (candidate)
   "Set msgid"
