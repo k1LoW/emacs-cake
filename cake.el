@@ -109,24 +109,25 @@
 ;;    default = nil
 
 ;;; Change Log
-;; 1.1.9: recursive search dir when use cake-open-views-dir
-;; 1.1.8: remove (setq max-lisp-eval-depth ) (setq max-specpdl-size )
-;; 1.1.7: modifiy cake-complete.
+;; -.-.-: New function cake-camelize. Refactor code.
+;; 1.1.9: Recursive search dir when use cake-open-views-dir
+;; 1.1.8: Remove (setq max-lisp-eval-depth ) (setq max-specpdl-size )
+;; 1.1.7: Modifiy cake-complete.
 ;; 1.1.6: New valiables cake-app-path-search-limit. Refactor cake-is-app-path. Fix Doc
-;; 1.1.5: modifiy cake-source-javascript, cake-source-css, cake-source-elements
+;; 1.1.5: Modifiy cake-source-javascript, cake-source-css, cake-source-elements
 ;; 1.1.4: New valiables cake-use-imenu.
 ;; 1.1.3: Bug fix.
 ;; 1.1.2: modify cake-complete.
 ;; 1.1.1: Bug fix.
 ;; 1.1.0: Use anything-show-completion.el if available.
-;; 1.0.9: new function cake-complete.
-;; 1.0.8: modifiy cake-switch-to-function.
+;; 1.0.9: New function cake-complete.
+;; 1.0.8: Modifiy cake-switch-to-function.
 ;; 1.0.7: Bug fix.
 ;; 1.0.6: New valiables cake-po-file-path. Fix doc.
-;; 1.0.5: set header-name to cake-open-*-dir. advice from id:rubikitch.
+;; 1.0.5: Set header-name to cake-open-*-dir. advice from id:rubikitch.
 ;; 1.0.4: cake-is-app-path bug fix.
-;; 1.0.3: modify cake-switch-testcase.
-;; 1.0.2: new function cake-switch-testcase, cake-switch-to-controller-testcase, cake-switch-to-model-testcase, cake-switch-to-fixture, cake-open-tests-dir.
+;; 1.0.3: Modify cake-switch-testcase.
+;; 1.0.2: New function cake-switch-testcase, cake-switch-to-controller-testcase, cake-switch-to-model-testcase, cake-switch-to-fixture, cake-open-tests-dir.
 ;; 1.0.1: Applied a patch from xcezx.
 ;; 1.0.0: CakePHP 1.2 Final Release!!! Great Work, CakePHP team!! cake.el 1.0.0 released, too!! use define-minor-mode. cake-set-app-path bug fix.
 ;; 0.2.9: cake-is-controller-fileでcake-lower-camelized-action-nameがsetqされていないことによるbug fix
@@ -902,22 +903,37 @@
             (switch-to-buffer logbuffer))
         (message "Can't set log.")))))
 
+(defun cake-camelize (str)
+  "Change snake_case to Camelize."
+  (let ((camelize-str str)(default-case default-case-fold-search))
+    (setq case-fold-search nil)
+    (setq camelize-str (downcase camelize-str))
+    (while (string-match "_" camelize-str)
+      (setq camelize-str (replace-match " " nil nil camelize-str)))
+    (message camelize-str)
+    (setq camelize-str (capitalize camelize-str))
+    (while (string-match " " camelize-str)
+      (setq camelize-str (replace-match "" nil nil camelize-str)))
+    (setq case-fold-search default-case)
+    camelize-str))
+;;(cake-camelize "cake_camelize")
+
 (defun cake-lower-camelize (str)
-  "Lower camelize."
+  "Change snake_case to lowerCamelize."
   (let ((head-str "")(tail-str "")(default-case default-case-fold-search))
     (setq case-fold-search nil)
     (if (string-match "^\\([a-z]+_\\)\\([a-z0-9_]*\\)" (downcase str))
         (progn
           (setq head-str (match-string 1 (downcase str)))
-          (setq tail-str (match-string 2 (downcase str)))
+          (setq tail-str (match-string 2 (capitalize str)))
           (if (string-match "_" head-str)
               (setq head-str (replace-match "" nil nil head-str)))
-          (setq tail-str (capitalize tail-str))
           (while (string-match "_" tail-str)
             (setq tail-str (replace-match "" nil nil tail-str)))
           (setq case-fold-search default-case)
           (concat head-str tail-str))
       str)))
+;;(cake-lower-camelize "cake_lower_camelize")
 
 (defun cake-snake (str)
   "Change snake_case."

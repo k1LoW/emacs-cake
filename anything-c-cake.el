@@ -86,7 +86,8 @@
                 nil (current-buffer))
                (goto-char (point-min))
                (while (re-search-forward "..*\\/\\(..*\\)_controller\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
-                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
+                 (replace-match (concat (match-string 1) " / " (match-string 2))))
+               (goto-char (point-min)))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -184,8 +185,11 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "models/*.php --with-filename | sed 's/..*\\/\\(..*\\)\\.php:.*function *\\([^ ][^ ]*\\) *(.*).*/\\1 \\/ \\2/g'")
-                nil (current-buffer)))
+                        "models/*.php --with-filename")
+                nil (current-buffer))
+               (goto-char (point-min))
+               (while (re-search-forward "..*\\/\\(..*\\)\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -208,8 +212,11 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "controllers/components/*.php --with-filename | sed 's/..*\\/\\(..*\\)\\.php:.*function *\\([^ ][^ ]*\\) *(.*).*/\\1 \\/ \\2/g'")
-                nil (current-buffer)))
+                        "controllers/components/*.php --with-filename")
+                nil (current-buffer))
+               (goto-char (point-min))
+               (while (re-search-forward "..*\\/\\(..*\\)\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -230,8 +237,11 @@
                (call-process-shell-command
                 (concat "grep '[^_]function' "
                         cake-app-path
-                        "models/behaviors/*.php --with-filename | sed 's/.\\+\\/\\(.\\+\\)\\.php:.*function *\\([^ ]\\+\\) *(.*).*/\\1 \\/ \\2/g'")
-                nil (current-buffer)))
+                        "models/behaviors/*.php --with-filename")
+                nil (current-buffer))
+               (goto-char (point-min))
+               (while (re-search-forward "..*\\/\\(..*\\)\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
