@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Not to use sed.
 ;; -.-.-:Use Basic Regular Expressions for Mac sed.
 ;; -.-.-:New valiables anything-c-source-cake-po-not-found.
 ;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
@@ -85,7 +86,7 @@
                         "controllers/*controller.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward "..*\\/\\(..*\\)_controller\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+               (while (re-search-forward ".+\\/\\(.+\\)_controller\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
                  (replace-match (concat (match-string 1) " / " (match-string 2))))
                (goto-char (point-min)))
            (with-current-buffer (anything-candidate-buffer 'local)
@@ -188,7 +189,7 @@
                         "models/*.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward "..*\\/\\(..*\\)\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+               (while (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
                  (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
@@ -215,7 +216,7 @@
                         "controllers/components/*.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward "..*\\/\\(..*\\)\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+               (while (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
                  (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
@@ -240,7 +241,7 @@
                         "models/behaviors/*.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward "..*\\/\\(..*\\)\.php:.*function *\\([^ ][^ ]*\\) *(.*).*" nil t)
+               (while (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
                  (replace-match (concat (match-string 1) " / " (match-string 2)))))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
