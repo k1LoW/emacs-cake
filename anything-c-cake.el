@@ -16,7 +16,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ;;
-;; Version: 1.1.9
+;; Version: 1.2.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -37,9 +37,8 @@
 ;;
 
 ;; Change Log
-;; -.-.-:Not to use sed.
-;; -.-.-:Use Basic Regular Expressions for Mac sed.
-;; -.-.-:New valiables anything-c-source-cake-po-not-found.
+;; 1.2.0:Not to use sed.
+;;       New valiables anything-c-source-cake-po-not-found.
 ;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
 ;; 1.1.8:Bug fix.
 ;; 1.1.7:New valiables anything-c-source-cake-component-function.

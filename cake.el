@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.1.9
+;; Version: 1.2.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -109,7 +109,8 @@
 ;;    default = nil
 
 ;;; Change Log
-;; -.-.-: New function cake-camelize. Refactor code.
+;; 1.2.0: cake-switch-to-element bug fix.
+;;        New function cake-camelize. Refactor code.
 ;; 1.1.9: Recursive search dir when use cake-open-views-dir
 ;; 1.1.8: Remove (setq max-lisp-eval-depth ) (setq max-specpdl-size )
 ;; 1.1.7: Modifiy cake-complete.
@@ -611,8 +612,8 @@
   "Switch to element."
   (interactive)
   (if (cake-set-app-path)
-      (if (or (string-match "renderElement(['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"])" (cake-get-current-line))
-              (string-match "element(['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"])" (cake-get-current-line)))
+      (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
+              (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
           (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
               (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
             (if (y-or-n-p "Make new file?")
@@ -625,7 +626,7 @@
   "Switch to javascript."
   (interactive)
   (if (cake-set-app-path)
-      (if (string-match "$javascript->link(['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"]" (cake-get-current-line))
+      (if (string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
           (cond
            ((file-exists-p (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line))))
             (find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)))))
