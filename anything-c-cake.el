@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Refactor code.
 ;; 1.2.0:Not to use sed.
 ;;       New valiables anything-c-source-cake-po-not-found.
 ;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
@@ -77,7 +78,7 @@
     (init
      . (lambda ()
          (if
-             (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
+             (and (cake-set-app-path) (executable-find "grep"))
              (with-current-buffer (anything-candidate-buffer 'local)
                (call-process-shell-command
                 (concat "grep '[^_]function' "
@@ -86,8 +87,8 @@
                 nil (current-buffer))
                (goto-char (point-min))
                (while (re-search-forward ".+\\/\\(.+\\)_controller\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
-                 (replace-match (concat (match-string 1) " / " (match-string 2))))
-               (goto-char (point-min)))
+               (replace-match (concat (match-string 1) " / " (match-string 2))))
+               )
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -180,7 +181,7 @@
     (init
      . (lambda ()
          (if
-             (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
+             (and (cake-set-app-path) (executable-find "grep"))
              (with-current-buffer (anything-candidate-buffer 'local)
                (call-process-shell-command
                 (concat "grep '[^_]function' "
@@ -188,8 +189,17 @@
                         "models/*.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
-                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
+               (while (not (eobp))
+                 (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+                     (goto-char (point-max))
+                   (setq cp (match-beginning 0))
+                   (setq function-name (match-string 2))
+                   (setq cake-singular-name (match-string 1))
+                   (setq class-name (cake-camelize cake-singular-name))
+                   (goto-char cp)
+                   (delete-region (point) (save-excursion (end-of-line) (point)))
+                   (insert (concat class-name "->" function-name))
+                   )))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -207,7 +217,7 @@
     (init
      . (lambda ()
          (if
-             (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
+             (and (cake-set-app-path) (executable-find "grep"))
              (with-current-buffer (anything-candidate-buffer 'local)
                (call-process-shell-command
                 (concat "grep '[^_]function' "
@@ -215,8 +225,17 @@
                         "controllers/components/*.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
-                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
+               (while (not (eobp))
+                 (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+                     (goto-char (point-max))
+                   (setq cp (match-beginning 0))
+                   (setq function-name (match-string 2))
+                   (setq cake-singular-name (match-string 1))
+                   (setq class-name (cake-camelize cake-singular-name))
+                   (goto-char cp)
+                   (delete-region (point) (save-excursion (end-of-line) (point)))
+                   (insert (concat class-name "->" function-name))
+                   )))
            (with-current-buffer (anything-candidate-buffer 'local)
              (call-process-shell-command nil nil (current-buffer)))
            )))
@@ -232,7 +251,7 @@
     (init
      . (lambda ()
          (if
-             (and (cake-set-app-path) (executable-find "grep") (executable-find "sed"))
+             (and (cake-set-app-path) (executable-find "grep"))
              (with-current-buffer (anything-candidate-buffer 'local)
                (call-process-shell-command
                 (concat "grep '[^_]function' "
@@ -240,10 +259,19 @@
                         "models/behaviors/*.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
-                 (replace-match (concat (match-string 1) " / " (match-string 2)))))
-           (with-current-buffer (anything-candidate-buffer 'local)
-             (call-process-shell-command nil nil (current-buffer)))
+               (while (not (eobp))
+                 (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+                     (goto-char (point-max))
+                   (setq cp (match-beginning 0))
+                   (setq function-name (match-string 2))
+                   (setq cake-singular-name (match-string 1))
+                   (setq class-name (cake-camelize cake-singular-name))
+                   (goto-char cp)
+                   (delete-region (point) (save-excursion (end-of-line) (point)))
+                   (insert (concat class-name "->" function-name))
+                   )))
+               (with-current-buffer (anything-candidate-buffer 'local)
+                 (call-process-shell-command nil nil (current-buffer)))
            )))
     (candidates-in-buffer)
     (display-to-real . anything-c-cake-set-names2)
@@ -255,9 +283,10 @@
 (defun anything-c-cake-set-names2 (candidate)
   "Set names by display-to-real"
   (progn
-    (string-match "\\(.+\\) / \\(.+\\)" candidate)
-    (setq cake-singular-name (match-string 1 candidate))
+    (string-match "\\(.+\\)->\\(.+\\)" candidate)
+    (setq cake-camelized-singular-name (match-string 1 candidate))
     (setq cake-candidate-function-name (match-string 2 candidate))
+    (setq cake-singular-name (cake-snake cake-camelized-singular-name))
     ))
 
 (defun anything-c-cake-create-po-file-buffer ()

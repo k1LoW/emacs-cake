@@ -1,4 +1,4 @@
-;;; cake.el ---  CakePHP Minor Mode
+;;;cake.el ---  CakePHP Minor Mode
 ;; -*- Mode: Emacs-Lisp -*-
 
 ;; Copyright (C) 2009 by 101000code/101000LAB
@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Refactor code.
 ;; 1.2.0: cake-switch-to-element bug fix.
 ;;        New function cake-camelize. Refactor code.
 ;; 1.1.9: Recursive search dir when use cake-open-views-dir
@@ -909,12 +910,9 @@
   (let ((camelize-str str)(default-case default-case-fold-search))
     (setq case-fold-search nil)
     (setq camelize-str (downcase camelize-str))
-    (while (string-match "_" camelize-str)
-      (setq camelize-str (replace-match " " nil nil camelize-str)))
-    (message camelize-str)
     (setq camelize-str (capitalize camelize-str))
-    (while (string-match " " camelize-str)
-      (setq camelize-str (replace-match "" nil nil camelize-str)))
+    (while (string-match "_" camelize-str)
+      (setq camelize-str (replace-match "" t nil camelize-str)))
     (setq case-fold-search default-case)
     camelize-str))
 ;;(cake-camelize "cake_camelize")
@@ -928,9 +926,9 @@
           (setq head-str (match-string 1 (downcase str)))
           (setq tail-str (match-string 2 (capitalize str)))
           (if (string-match "_" head-str)
-              (setq head-str (replace-match "" nil nil head-str)))
+              (setq head-str (replace-match "" t nil head-str)))
           (while (string-match "_" tail-str)
-            (setq tail-str (replace-match "" nil nil tail-str)))
+            (setq tail-str (replace-match "" t nil tail-str)))
           (setq case-fold-search default-case)
           (concat head-str tail-str))
       str)))
@@ -951,6 +949,7 @@
           (setq case-fold-search default-case)
           (downcase (concat head-str tail-str)))
       str)))
+;;(cake-snake "CakeSnake")
 
 ;; mode provide
 (provide 'cake)
