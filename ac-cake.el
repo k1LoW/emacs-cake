@@ -3,17 +3,31 @@
 (require 'auto-complete)
 
 (defun ac-cake-candidate ()
-  (unless (not
+  (unless (nohjtt
            (and (cake-set-app-path) (executable-find "grep")))
     (ignore-errors
       (message "%s" ac-prefix)
       (with-temp-buffer
+        ;;Model Method
         (call-process-shell-command
          (concat "grep '[^_]function' "
                  cake-app-path
                  "models/*.php --with-filename")
          nil (current-buffer))
+        ;;Component Method
+        (call-process-shell-command
+         (concat "grep '[^_]function' "
+                 cake-app-path
+                 "controllers/components/*.php --with-filename")
+         nil (current-buffer))
+        ;;Behavior Method
+        (call-process-shell-command
+         (concat "grep '[^_]function' "
+                 cake-app-path
+                 "models/behaviors/*.php --with-filename")
+         nil (current-buffer))
         (goto-char (point-min))
+        (flush-lines "^ *$")
         (let (ac-cake-index)
           (while (not (eobp))
             (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
