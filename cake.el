@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Bug fix (cake-snake). Refactor code.
 ;; -.-.-: Refactor code.
 ;; 1.2.0: cake-switch-to-element bug fix.
 ;;        New function cake-camelize. Refactor code.
@@ -907,20 +908,16 @@
 
 (defun cake-camelize (str)
   "Change snake_case to Camelize."
-  (let ((camelize-str str)(default-case default-case-fold-search))
-    (setq case-fold-search nil)
-    (setq camelize-str (downcase camelize-str))
-    (setq camelize-str (capitalize camelize-str))
-    (while (string-match "_" camelize-str)
-      (setq camelize-str (replace-match "" t nil camelize-str)))
-    (setq case-fold-search default-case)
-    camelize-str))
+  (let ((camelize-str str) (case-fold-search nil))
+    (setq camelize-str (capitalize (downcase camelize-str)))
+    (replace-regexp-in-string
+     "_" ""
+     camelize-str)))
 ;;(cake-camelize "cake_camelize")
 
 (defun cake-lower-camelize (str)
   "Change snake_case to lowerCamelize."
-  (let ((head-str "")(tail-str "")(default-case default-case-fold-search))
-    (setq case-fold-search nil)
+  (let ((head-str "") (tail-str "") (case-fold-search nil))
     (if (string-match "^\\([a-z]+_\\)\\([a-z0-9_]*\\)" (downcase str))
         (progn
           (setq head-str (match-string 1 (downcase str)))
@@ -929,27 +926,21 @@
               (setq head-str (replace-match "" t nil head-str)))
           (while (string-match "_" tail-str)
             (setq tail-str (replace-match "" t nil tail-str)))
-          (setq case-fold-search default-case)
           (concat head-str tail-str))
       str)))
 ;;(cake-lower-camelize "cake_lower_camelize")
 
-(defun cake-snake (str)
+(defun cake-snake (str) ;;copied from rails-lib.el
   "Change snake_case."
-  (let ((head-str "")p(tail-str "")(default-case default-case-fold-search))
-    (setq case-fold-search nil)
-    (if (string-match "^\\([A-Z]?\\)\\([a-zA-Z0-9_]*\\)" str)
-        (progn
-          (setq head-str (match-string 1 str))
-          (setq tail-str (match-string 2 str))
-          (if (string-match "[A-Z]" head-str)
-              (setq head-str (downcase head-str)))
-          (while (string-match "\\([^_]\\)\\([A-Z]\\)" tail-str)
-            (setq tail-str (replace-match "\\1_\\2" nil nil tail-str)))
-          (setq case-fold-search default-case)
-          (downcase (concat head-str tail-str)))
-      str)))
+  (let ((case-fold-search nil))
+    (downcase
+     (replace-regexp-in-string
+      "\\([A-Z]+\\)\\([A-Z][a-z]\\)" "\\1_\\2"
+      (replace-regexp-in-string
+       "\\([a-z\\d]\\)\\([A-Z]\\)" "\\1_\\2"
+       str)))))
 ;;(cake-snake "CakeSnake")
+;;(cake-snake "CCakeSnake")
 
 ;; mode provide
 (provide 'cake)
