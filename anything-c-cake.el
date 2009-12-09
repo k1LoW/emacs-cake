@@ -37,6 +37,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Change display source.
 ;; -.-.-:Refactor code.
 ;; 1.2.0:Not to use sed.
 ;;       New valiables anything-c-source-cake-po-not-found.
