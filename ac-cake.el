@@ -3,10 +3,9 @@
 (require 'auto-complete)
 
 (defun ac-cake-candidate ()
-  (unless (nohjtt
+  (unless (not
            (and (cake-set-app-path) (executable-find "grep")))
     (ignore-errors
-      (message "%s" ac-prefix)
       (with-temp-buffer
         ;;Model Method
         (call-process-shell-command
