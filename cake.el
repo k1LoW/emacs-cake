@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -109,9 +109,9 @@
 ;;    default = nil
 
 ;;; Change Log
-;; -.-.-: New valiables cake-hook.
-;; -.-.-: Bug fix (cake-snake). Refactor code.
-;; -.-.-: Refactor code.
+;; 1.2.1: New valiables cake-hook.
+;;        Bug fix (cake-snake).
+;;        Refactor code.
 ;; 1.2.0: cake-switch-to-element bug fix.
 ;;        New function cake-camelize. Refactor code.
 ;; 1.1.9: Recursive search dir when use cake-open-views-dir

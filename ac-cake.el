@@ -17,20 +17,24 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.0
+;;
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org
 
+;;; Code:
+
+;;require
 (require 'auto-complete)
 
-(defvar ac-cake-index nil)
+(defvar ac-cake-index nil
+  "Index of CakePHP candidates.")
 
 (defun ac-cake-setup ()
-  ""
+  "Setup ac-cake."
   (add-hook 'after-save-hook 'ac-cake-build-index))
 
 (defun ac-cake-build-index ()
-  ""
+  "Build index."
   (unless (not
            (and (cake-set-app-path) (executable-find "grep")))
     (ignore-errors
@@ -73,6 +77,9 @@
     (requires . 3))
   "Source for CakePHP")
 
+;; Hook
 (add-hook 'cake-hook 'ac-cake-setup)
 
 (provide 'ac-cake)
+
+;;; Code ends
