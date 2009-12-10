@@ -390,13 +390,7 @@
 
 (defun cake-get-current-line ()
   "Get current line."
-  (let ((line-start (progn
-                      (beginning-of-line)
-                      (point)))
-        (line-end (progn
-                    (end-of-line)
-                    (point))))
-    (buffer-substring line-start line-end)))
+  (thing-at-point 'line))
 
 (defun cake-set-app-path ()
   "Set app path."
