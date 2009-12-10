@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: New valiables cake-hook.
 ;; -.-.-: Bug fix (cake-snake). Refactor code.
 ;; -.-.-: Refactor code.
 ;; 1.2.0: cake-switch-to-element bug fix.
@@ -206,7 +207,8 @@
       (progn
         (setq minor-mode-map-alist
               (cons (cons 'cake cake-key-map)
-                    minor-mode-map-alist)))
+                    minor-mode-map-alist))
+        (run-hooks 'cake-hook))
     nil))
 
 (if (fboundp 'define-global-minor-mode)
@@ -295,6 +297,9 @@
 
 (defvar cake-javascript-regexp "^\\(.+/app/\\)webroot/js/.+\.js$"
   "JavaScript file regExp.")
+
+(defvar cake-hook nil
+  "")
 
 (defun cake-is-model-file ()
   "Check whether current file is model file."

@@ -4,7 +4,12 @@
 
 (defvar ac-cake-index nil)
 
+(defun ac-cake-setup ()
+  ""
+  (add-hook 'after-save-hook 'ac-cake-build-index))
+
 (defun ac-cake-build-index ()
+  ""
   (unless (not
            (and (cake-set-app-path) (executable-find "grep")))
     (ignore-errors
@@ -46,5 +51,7 @@
     (candidates . ac-cake-index)
     (requires . 3))
   "Source for CakePHP")
+
+(add-hook 'cake-hook 'ac-cake-setup)
 
 (provide 'ac-cake)
