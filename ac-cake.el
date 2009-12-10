@@ -2,10 +2,13 @@
 ;; -*- Mode: Emacs-Lisp -*-
 (require 'auto-complete)
 
-(defun ac-cake-candidate ()
+(defvar ac-cake-index nil)
+
+(defun ac-cake-build-index ()
   (unless (not
            (and (cake-set-app-path) (executable-find "grep")))
     (ignore-errors
+      (setq ac-cake-index nil)
       (with-temp-buffer
         ;;Model Method
         (call-process-shell-command
@@ -27,25 +30,21 @@
          nil (current-buffer))
         (goto-char (point-min))
         (flush-lines "^ *$")
-        (let (ac-cake-index)
           (while (not (eobp))
             (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
                 (goto-char (point-max))
-              (setq cp (match-beginning 0))
+              (setq class-name (cake-camelize (match-string 1)))
               (setq function-name (match-string 2))
-              (setq cake-singular-name (match-string 1))
-              (setq class-name (cake-camelize cake-singular-name))
-              (goto-char cp)
               (delete-region (point) (save-excursion (end-of-line) (point)))
               (push (concat class-name "->" function-name) ac-cake-index)
               ))
-          ac-cake-index)))))
+          ac-cake-index))))
 
 (defvar ac-source-cake
-  '((candidates . ac-cake-candidate)
-    (requires . 3)
-    (cache)
-    )
+  '((init . (lambda () (unless ac-cake-index
+                         (ac-cake-build-index))))
+    (candidates . ac-cake-index)
+    (requires . 3))
   "Source for CakePHP")
 
 (provide 'ac-cake)
