@@ -39,6 +39,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Add "Insert" action.
 ;; -.-.-:New function anything-c-cake-anything-only-function.
 ;; 1.2.1:Change display source.
 ;;       Refactor code.
@@ -47,7 +48,7 @@
 ;; 1.1.9:New valiables anything-c-source-cake-behavior-function. Refactor Code.
 ;; 1.1.8:Bug fix.
 ;; 1.1.7:New valiables anything-c-source-cake-component-function.
-;; 1.1.6:add migemo.
+;; 1.1.6:Add migemo.
 ;; 1.1.5:grep command bug fix.
 ;; 1.1.4:New function anything-c-cake-anything-only-po. Fix doc.
 ;; 1.1.3:New valiables anything-c-cake-po.
@@ -212,6 +213,8 @@
                                (anything-c-cake-switch-to-model)
                                (goto-char (point-min))
                                (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
+     ("Insert" . (lambda (candidate)
+                   (insert candidate)))
      )))
 
 (defvar anything-c-source-cake-component-function
@@ -243,6 +246,8 @@
     (action
      ("Switch to Function" . (lambda (candidate)
                                (anything-c-cake-switch-to-file-function "controllers/components/")))
+     ("Insert" . (lambda (candidate)
+                   (insert candidate)))
      )))
 
 (defvar anything-c-source-cake-behavior-function
@@ -274,6 +279,8 @@
     (action
      ("Switch to Function" . (lambda (candidate)
                                (anything-c-cake-switch-to-file-function "models/behaviors/")))
+     ("Insert" . (lambda (candidate)
+                   (insert candidate)))
      )))
 
 (defun anything-c-cake-set-names2 (candidate)
