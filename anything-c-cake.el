@@ -26,6 +26,8 @@
 ;;
 ;;  `anything-c-cake-anything-only-source-cake'
 ;;    anything only anything-c-source-cake and anything-c-source-cake-model-function.
+;;  `anything-c-cake-anything-only-function'
+;;    anything only anything-c-source-cake-function.
 ;;  `anything-c-cake-anything-only-model-function'
 ;;    anything only anything-c-source-cake-model-function.
 ;;  `anything-c-cake-anything-only-po'
@@ -37,6 +39,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:New function anything-c-cake-anything-only-function.
 ;; 1.2.1:Change display source.
 ;;       Refactor code.
 ;; 1.2.0:Not to use sed.
@@ -363,6 +366,14 @@
                   anything-c-source-cake-component-function
                   anything-c-source-cake-behavior-function)
             nil "Find CakePHP Sources: " nil nil))
+
+(defun anything-c-cake-anything-only-function ()
+  "anything only anything-c-source-cake-function."
+  (interactive)
+  (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
+    (anything (list anything-c-source-cake-model-function
+                    anything-c-source-cake-component-function
+                    anything-c-source-cake-behavior-function) initial-pattern "Find Cake Functions: " nil)))
 
 (defun anything-c-cake-anything-only-model-function ()
   "anything only anything-c-source-cake-model-function."
