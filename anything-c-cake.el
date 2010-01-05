@@ -39,6 +39,8 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Update function anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
+;; -.-.-:Change keybind 'Cc-o' anything-c-cake-anything-only-model-function -> anything-c-cake-anything-only-function.
 ;; -.-.-:Add "Insert" action.
 ;; -.-.-:New function anything-c-cake-anything-only-function.
 ;; 1.2.1:Change display source.
@@ -74,6 +76,10 @@
 ;;require
 (require 'anything)
 (require 'cake)
+
+(when (require 'anything-show-completion nil t)
+  (use-anything-show-completion 'anything-c-cake-anything-only-function
+                                '(length cake-initial-input)))
 
 (defvar cake-candidate-function-name nil)
 
@@ -380,13 +386,13 @@
   (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
     (anything (list anything-c-source-cake-model-function
                     anything-c-source-cake-component-function
-                    anything-c-source-cake-behavior-function) initial-pattern "Find Cake Functions: " nil)))
+                    anything-c-source-cake-behavior-function) (cake-get-initial-input) "Find Cake Functions: " nil)))
 
 (defun anything-c-cake-anything-only-model-function ()
   "anything only anything-c-source-cake-model-function."
   (interactive)
   (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
-    (anything '(anything-c-source-cake-model-function) initial-pattern "Find Model Functions: " nil)))
+    (anything '(anything-c-source-cake-model-function) (cake-get-initial-input) "Find Model Functions: " nil)))
 
 (defun anything-c-cake-anything-only-po ()
   "anything only anything-c-source-cake-po."
@@ -397,7 +403,7 @@
               initial-pattern "Find Msgid And Msgstr: " nil)))
 
 (define-key cake-key-map "\C-cl" 'anything-c-cake-anything-only-source-cake)
-(define-key cake-key-map "\C-co" 'anything-c-cake-anything-only-model-function)
+(define-key cake-key-map "\C-co" 'anything-c-cake-anything-only-function)
 (define-key cake-key-map "\C-cp" 'anything-c-cake-anything-only-po)
 
 (provide 'anything-c-cake)
