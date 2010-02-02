@@ -39,6 +39,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Revert anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;; 1.2.2:Update function anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;;      :Change keybind 'Cc-o' anything-c-cake-anything-only-model-function -> anything-c-cake-anything-only-function.
 ;;      :Add "Insert" action.
@@ -386,13 +387,13 @@
   (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
     (anything (list anything-c-source-cake-model-function
                     anything-c-source-cake-component-function
-                    anything-c-source-cake-behavior-function) (cake-get-initial-input) "Find Cake Functions: " nil)))
+                    anything-c-source-cake-behavior-function) initial-pattern "Find Cake Functions: " nil)))
 
 (defun anything-c-cake-anything-only-model-function ()
   "anything only anything-c-source-cake-model-function."
   (interactive)
   (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
-    (anything '(anything-c-source-cake-model-function) (cake-get-initial-input) "Find Model Functions: " nil)))
+    (anything '(anything-c-source-cake-model-function) initial-pattern "Find Model Functions: " nil)))
 
 (defun anything-c-cake-anything-only-po ()
   "anything only anything-c-source-cake-po."
