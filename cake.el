@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Modify valiables cake-source-javascript, cake-source-css
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
 ;;        Bug fix (cake-snake).
@@ -793,7 +794,7 @@
                     (mapcar (function (lambda (c)
                                         (if (string-match (concat "\\.js$") c)
                                             (setq c (replace-match "" nil nil c)))
-                                        (concat "$javascript->link('" c "');")))
+                                        (concat "$this->Html->script('" c "');")))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "webroot/js/" x))))
                                        (cake-get-recuresive-file-list "webroot/js/")))))
@@ -808,7 +809,7 @@
                     (mapcar (function (lambda (c)
                                         (if (string-match (concat "\\.css$") c)
                                             (setq c (replace-match "" nil nil c)))
-                                        (concat "$html->css('" c "');")))
+                                        (concat "$this->Html->css('" c "');")))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "webroot/css/" x))))
                                        (cake-get-recuresive-file-list "webroot/css/")))))
