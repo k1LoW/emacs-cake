@@ -42,33 +42,36 @@
       (with-temp-buffer
         ;;Model Method
         (call-process-shell-command
-         (concat "grep '[^_]function' "
-                 cake-app-path
-                 "models/*.php --with-filename")
+         (ac-cake-make-shell-command "/models/")
          nil (current-buffer))
         ;;Component Method
         (call-process-shell-command
-         (concat "grep '[^_]function' "
-                 cake-app-path
-                 "controllers/components/*.php --with-filename")
+         (ac-cake-make-shell-command "/components/")
          nil (current-buffer))
         ;;Behavior Method
         (call-process-shell-command
-         (concat "grep '[^_]function' "
-                 cake-app-path
-                 "models/behaviors/*.php --with-filename")
+         (ac-cake-make-shell-command "/behaviors/")
          nil (current-buffer))
         (goto-char (point-min))
         (flush-lines "^ *$")
-          (while (not (eobp))
-            (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
-                (goto-char (point-max))
-              (setq class-name (cake-camelize (match-string 1)))
-              (setq function-name (match-string 2))
-              (delete-region (point) (save-excursion (end-of-line) (point)))
-              (push (concat class-name "->" function-name) ac-cake-index)
-              ))
-          ac-cake-index))))
+        (while (not (eobp))
+          (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+              (goto-char (point-max))
+            (setq class-name (cake-camelize (match-string 1)))
+            (setq function-name (match-string 2))
+            (delete-region (point) (save-excursion (end-of-line) (point)))
+            (push (concat class-name "->" function-name) ac-cake-index)
+            ))
+        ac-cake-index))))
+
+(defun ac-cake-make-shell-command (dir)
+  "Make shell command."
+  (concat "find "
+          cake-app-path
+          " | grep "
+          "'" dir ".*php$'"
+          " | xargs grep '[^_]function' "
+          "--with-filename"))
 
 (defvar ac-source-cake
   '((init . (lambda () (unless ac-cake-index
