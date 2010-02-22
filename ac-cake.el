@@ -42,15 +42,15 @@
       (with-temp-buffer
         ;;Model Method
         (call-process-shell-command
-         (ac-cake-make-shell-command "/models/")
+         (ac-cake-make-shell-command "models")
          nil (current-buffer))
         ;;Component Method
         (call-process-shell-command
-         (ac-cake-make-shell-command "/components/")
+         (ac-cake-make-shell-command "components")
          nil (current-buffer))
         ;;Behavior Method
         (call-process-shell-command
-         (ac-cake-make-shell-command "/behaviors/")
+         (ac-cake-make-shell-command "behaviors")
          nil (current-buffer))
         (goto-char (point-min))
         (flush-lines "^ *$")
@@ -64,12 +64,12 @@
             ))
         ac-cake-index))))
 
-(defun ac-cake-make-shell-command (dir)
+(defun ac-cake-make-shell-command (dir-name)
   "Make shell command."
   (concat "find "
           cake-app-path
           " | grep "
-          "'" dir ".*php$'"
+          "'/" dir-name "/.*php$'"
           " | xargs grep '[^_]function' "
           "--with-filename"))
 
