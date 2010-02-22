@@ -109,7 +109,8 @@
 ;;    default = nil
 
 ;;; Change Log
-;; -.-.-: Modify valiables cake-source-javascript, cake-source-css
+;; -.-.-: Modify function cake-switch-to-javascript.
+;; -.-.-: Modify valiables cake-source-javascript, cake-source-css.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
 ;;        Bug fix (cake-snake).
@@ -629,7 +630,8 @@
   "Switch to javascript."
   (interactive)
   (if (cake-set-app-path)
-      (if (string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
+      (if (or (string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
+              (string-match "$this->Html->script( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)));;1.3x
           (cond
            ((file-exists-p (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line))))
             (find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)))))
