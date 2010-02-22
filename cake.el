@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
 ;;        Bug fix (cake-snake).
