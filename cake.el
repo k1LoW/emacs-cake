@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.3
+;; Version: 1.2.4a
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: New function cake-switch-to-css. Modify cake-switch.
 ;; -.-.-: Modifiy cake-switch.
 ;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
@@ -119,7 +120,7 @@
 ;;        New function cake-camelize. Refactor code.
 ;; 1.1.9: Recursive search dir when use cake-open-views-dir
 ;; 1.1.8: Remove (setq max-lisp-eval-depth ) (setq max-specpdl-size )
-;; 1.1.7: Modifiy cake-complete.
+;; 1.1.7: Modify cake-complete.
 ;; 1.1.6: New valiables cake-app-path-search-limit. Refactor cake-is-app-path. Fix Doc
 ;; 1.1.5: Modifiy cake-source-javascript, cake-source-css, cake-source-elements
 ;; 1.1.4: New valiables cake-use-imenu.
@@ -166,7 +167,7 @@
 ;; 0.0.3: cake-switch-to-view関数をCakePHP1.1.x.x,1.2.x.x両方の拡張子に対応
 
 ;;; TODO
-;; Add cake-switch-to-css.
+;;
 
 ;;; Code:
 
@@ -642,6 +643,22 @@
         (message "Can't find javascript name."))
     (message "Can't set app path.")))
 
+(defun cake-switch-to-css ()
+  "Switch to stylesheet."
+  (interactive)
+  (if (cake-set-app-path)
+      (if (string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
+          (cond
+           ((file-exists-p (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line))))
+            (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)))))
+           ((file-exists-p (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css"))
+            (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css")))
+           ((y-or-n-p "Make new file?")
+            (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css")))
+           (message (format "Can't find %s" (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css"))))
+        (message "Can't find stylesheet  name."))
+    (message "Can't set app path.")))
+
 (defun cake-switch ()
   "Omni switch function."
   (interactive)
@@ -652,6 +669,7 @@
        ;;cake-switch-to-element
        ((or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
             (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))) (cake-switch-to-element))
+       ((string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)) (cake-switch-to-css))
        ;;cake-switch-to-controller
        ((cake-is-view-file) (cake-switch-to-controller))
        ;;cake-switch-to-view
