@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Modifiy cake-switch.
 ;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
@@ -123,7 +124,7 @@
 ;; 1.1.5: Modifiy cake-source-javascript, cake-source-css, cake-source-elements
 ;; 1.1.4: New valiables cake-use-imenu.
 ;; 1.1.3: Bug fix.
-;; 1.1.2: modify cake-complete.
+;; 1.1.2: Modify cake-complete.
 ;; 1.1.1: Bug fix.
 ;; 1.1.0: Use anything-show-completion.el if available.
 ;; 1.0.9: New function cake-complete.
@@ -165,7 +166,7 @@
 ;; 0.0.3: cake-switch-to-view関数をCakePHP1.1.x.x,1.2.x.x両方の拡張子に対応
 
 ;;; TODO
-;;
+;; Add cake-switch-to-css.
 
 ;;; Code:
 
@@ -642,11 +643,21 @@
     (message "Can't set app path.")))
 
 (defun cake-switch ()
-  "Switch V <-> C."
+  "Omni switch function."
   (interactive)
-  (cond ((cake-is-view-file) (cake-switch-to-controller))
-        ((cake-is-controller-file) (cake-switch-to-view))
-        (t (message "Current buffer is neither view nor controller."))))
+  (if (cake-set-app-path)
+      (cond
+       ;;cake-switch-to-javascript
+       ((string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)) (cake-switch-to-javascript))
+       ;;cake-switch-to-element
+       ((or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
+            (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))) (cake-switch-to-element))
+       ;;cake-switch-to-controller
+       ((cake-is-view-file) (cake-switch-to-controller))
+       ;;cake-switch-to-view
+       ((cake-is-controller-file) (cake-switch-to-view))
+       (t (message "Current buffer is neither view nor controller.")))
+    (message "Can't set app path.")))
 
 (defun cake-switch-testcase ()
   "Switch testcase <-> C/M. Or, switch form fixture to testcase."
