@@ -32,6 +32,16 @@
 ;;
 ;; (require 'cake)
 ;; (global-cake t)
+;;
+
+;;; YASnippet
+;; If you use yasnippet, Put snippets/ into YASnippet load-directory.
+;; And put the following expression before yas/initialize()
+;;
+;; (add-hook 'cake-hook
+;;              #'(lambda ()
+;;                  (setq yas/mode-symbol 'cake)))
+;;
 
 ;;; Commentary:
 
@@ -943,12 +953,6 @@
        str)))))
 ;;(cake-snake "CakeSnake")
 ;;(cake-snake "CCakeSnake")
-
-;; YASnippet
-(if (fboundp 'yas/expand)
-    (add-hook 'cake-hook
-              #'(lambda ()
-                  (setq yas/mode-symbol 'cake))))
 
 ;; mode provide
 (provide 'cake)
