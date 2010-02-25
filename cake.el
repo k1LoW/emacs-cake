@@ -109,6 +109,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Add YASnippet snippets.
 ;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
@@ -942,6 +943,12 @@
        str)))))
 ;;(cake-snake "CakeSnake")
 ;;(cake-snake "CCakeSnake")
+
+;; YASnippet
+(if (fboundp 'yas/expand)
+    (add-hook 'cake-hook
+              #'(lambda ()
+                  (setq yas/mode-symbol 'cake))))
 
 ;; mode provide
 (provide 'cake)
