@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.2
+;; Version: 1.2.4a
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -32,6 +32,16 @@
 ;;
 ;; (require 'cake)
 ;; (global-cake t)
+;;
+
+;;; YASnippet
+;; If you use yasnippet, Put snippets/ into YASnippet load-directory.
+;; And put the following expression before yas/initialize()
+;;
+;; (add-hook 'cake-hook
+;;              #'(lambda ()
+;;                  (setq yas/mode-symbol 'cake)))
+;;
 
 ;;; Commentary:
 
@@ -111,6 +121,8 @@
 ;;; Change Log
 ;; -.-.-: Modify function cake-switch-to-javascript.
 ;; -.-.-: Modify valiables cake-source-javascript, cake-source-css.
+;; -.-.-: Add YASnippet snippets.
+;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
 ;;        Bug fix (cake-snake).
