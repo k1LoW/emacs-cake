@@ -122,8 +122,8 @@
 
 ;;; Change Log
 ;; 1.2.4: Add YASnippet snippets.
-;;      : New function cake-switch-to-css. Modify cake-switch.
-;;      : Modifiy cake-switch.
+;;        New function cake-switch-to-css. Modify cake-switch.
+;;        Modifiy cake-switch.
 ;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
