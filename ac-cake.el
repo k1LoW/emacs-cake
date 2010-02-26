@@ -1,7 +1,7 @@
 ;;; ac-cake.el --- CakePHP Minor Mode auto-complete.el source
 ;; -*- Mode: Emacs-Lisp -*-
 
-;; Copyright (C) 2009 by 101000code/101000LAB
+;; Copyright (C) 2009-2010 by 101000code/101000LAB
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
