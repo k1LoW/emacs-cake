@@ -69,8 +69,10 @@
 ;;    Switch to element.
 ;;  `cake-switch-to-javascript'
 ;;    Switch to javascript.
+;;  `cake-switch-to-css'
+;;    Switch to stylesheet.
 ;;  `cake-switch'
-;;    Switch V <-> C.
+;;    Omni switch function.
 ;;  `cake-switch-testcase'
 ;;    Switch testcase <-> C/M. Or, switch form fixture to testcase.
 ;;  `cake-open-dir'
@@ -109,7 +111,7 @@
 ;; Below are customizable option list:
 ;;
 ;;  `cake-app-path-search-limit'
-;;    search limit
+;;    Search limit
 ;;    default = 5
 ;;  `cake-po-file-path'
 ;;    Po file path.
@@ -680,6 +682,7 @@
        ;;cake-switch-to-element
        ((or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
             (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))) (cake-switch-to-element))
+       ;;cake-switch-to-css
        ((string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)) (cake-switch-to-css))
        ;;cake-switch-to-controller
        ((cake-is-view-file) (cake-switch-to-controller))
