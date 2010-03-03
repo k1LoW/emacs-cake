@@ -1,0 +1,3 @@
+#name : $form->create(...)
+# --
+\$form->create('${1:Model}', array('action' => '${2:add}'));
