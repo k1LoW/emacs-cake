@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.5a
+;; Version: 1.2.5
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -121,8 +121,8 @@
 ;;    default = nil
 
 ;;; Change Log
-;; -.-.-: New function cake-switch-to-file-history.
-;; -.-.-: Refactor code.
+;; 1.2.5: New function cake-switch-to-file-history.
+;;        Refactor code.
 ;; 1.2.4: Add YASnippet snippets.
 ;;        New function cake-switch-to-css. Modify cake-switch.
 ;;        Modifiy cake-switch.
