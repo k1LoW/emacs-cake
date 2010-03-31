@@ -515,9 +515,7 @@
           (if view-files
               (cond
                ((= 1 (length view-files))
-                (progn
-                  (cake-push-file-history)
-                  (find-file (concat cake-app-path "views/" cake-plural-name "/" (car view-files)))))
+                (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" (car view-files))))
                (t (anything
                    '(((name . "Switch to view")
                       (candidates . view-files)
@@ -531,8 +529,7 @@
                 (progn
                   (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
                     (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
-                  (cake-push-file-history)
-                  (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+                  (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
               (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))))))
       (message "Can't switch to view."))))
 
@@ -571,8 +568,7 @@
       (progn
         (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
             (progn
-              (cake-push-file-history)
-              (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+              (cake-find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
               (goto-char (point-min))
               (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
                   (progn
@@ -580,9 +576,7 @@
                     (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t)))
               (recenter))
           (if (y-or-n-p "Make new file?")
-              (progn
-                (cake-push-file-history)
-                (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))
+                (cake-find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
             (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))))))
     (message "Can't switch to contoroller.")))
 
@@ -610,12 +604,9 @@
 (defun cake-switch-to-file (file-path)
   "Switch to file."
   (if (file-exists-p file-path)
-      (progn
-        (cake-push-file-history)
-        (find-file file-path))
+        (cake-find-file file-path)
     (if (y-or-n-p "Make new file?")
-        (cake-push-file-history)
-      (find-file file-path)
+      (cake-find-file file-path)
       (message (format "Can't find %s" file-path)))))
 
 (defun cake-search-functions ()
@@ -660,9 +651,9 @@
       (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
               (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
           (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-              (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+              (cake-find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
             (if (y-or-n-p "Make new file?")
-                (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+                (cake-find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
               (message (format "Can't find %s" (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
         (message "Can't find element name."))
     (message "Can't set app path.")))
@@ -674,11 +665,11 @@
       (if (string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
           (cond
            ((file-exists-p (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line))))
-            (find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)))))
+            (cake-find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)))))
            ((file-exists-p (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)) ".js"))
-            (find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)) ".js")))
+            (cake-find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)) ".js")))
            ((y-or-n-p "Make new file?")
-            (find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)) ".js")))
+            (cake-find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)) ".js")))
            (message (format "Can't find %s" (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)) ".js"))))
         (message "Can't find javascript name."))
     (message "Can't set app path.")))
@@ -690,11 +681,11 @@
       (if (string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
           (cond
            ((file-exists-p (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line))))
-            (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)))))
+            (cake-find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)))))
            ((file-exists-p (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css"))
-            (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css")))
+            (cake-find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css")))
            ((y-or-n-p "Make new file?")
-            (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css")))
+            (cake-find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css")))
            (message (format "Can't find %s" (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)) ".css"))))
         (message "Can't find stylesheet  name."))
     (message "Can't set app path.")))
@@ -733,7 +724,7 @@
   (interactive)
   (let ((file (cake-pop-file-history)))
     (if file
-        (find-file (cdr file))
+        (cake-find-file (cdr file))
       (message "No file history."))))
 
 (defun cake-push-file-history ()
@@ -743,6 +734,11 @@
 (defun cake-pop-file-history ()
   "Pop file history."
   (pop cake-file-history))
+
+(defun cake-find-file (file-name)
+  "cake.el find-file."
+  (cake-push-file-history)
+  (find-file file-name))
 
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
