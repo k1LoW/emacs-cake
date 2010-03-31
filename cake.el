@@ -316,37 +316,41 @@
 (defvar cake-javascript-regexp "^\\(.+/app/\\)webroot/js/.+\.js$"
   "JavaScript file regExp.")
 
+(defvar cake-css-regexp "^\\(.+/app/\\)webroot/css/.+\.css$"
+  "Css file regExp.")
+
+(defvar cake-current-file-type nil
+  "Current file type.")
+
 (defvar cake-hook nil
-  "")
+  "Hook")
 
 (defun cake-is-model-file ()
   "Check whether current file is model file."
   (cake-set-app-path)
-  (if (string-match cake-model-regexp (buffer-file-name))
-      (progn
+  (if (not (string-match cake-model-regexp (buffer-file-name)))
+      nil
         (setq cake-singular-name (match-string 2 (buffer-file-name)))
         (cake-convert-singular-to-plural cake-plural-rules)
-        t)
-    nil))
+        (setq cake-current-file-type 'model)))
 
 (defun cake-is-view-file ()
   "Check whether current file is view file."
   (cake-set-app-path)
-  (if (string-match cake-view-regexp (buffer-file-name))
-      (progn
+  (if (not (string-match cake-view-regexp (buffer-file-name)))
+      nil
         (setq cake-plural-name (match-string 2 (buffer-file-name)))
         (setq cake-action-name (match-string 4 (buffer-file-name)))
         (setq cake-view-extension (match-string 5 (buffer-file-name)))
         (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
         (cake-convert-plural-to-singular cake-singular-rules)
-        t)
-    nil))
+        (setq cake-current-file-type 'view)))
 
 (defun cake-is-controller-file ()
   "Check whether current file is contoroller file."
   (cake-set-app-path)
-  (if (string-match cake-controller-regexp (buffer-file-name))
-      (progn
+  (if (not (string-match cake-controller-regexp (buffer-file-name)))
+      nil
         (setq cake-plural-name (match-string 2 (buffer-file-name)))
         (save-excursion
           (if
@@ -356,51 +360,56 @@
         (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
         (setq cake-snake-action-name (cake-snake cake-action-name))
         (cake-convert-plural-to-singular cake-singular-rules)
-        t)
-    nil))
+        (setq cake-current-file-type 'controller)))
 
 (defun cake-is-model-testcase-file ()
   "Check whether current file is model testcase file."
   (cake-set-app-path)
-  (if (string-match cake-model-testcase-regexp (buffer-file-name))
-      (progn
+  (if (not (string-match cake-model-testcase-regexp (buffer-file-name)))
+      nil
         (setq cake-singular-name (match-string 2 (buffer-file-name)))
         (cake-convert-singular-to-plural cake-plural-rules)
-        t)
-    nil))
+        (setq cake-current-file-type 'model-testcase)))
 
 (defun cake-is-controller-testcase-file ()
   "Check whether current file is controller testcase file."
   (cake-set-app-path)
-  (if (string-match cake-controller-testcase-regexp (buffer-file-name))
-      (progn
+  (if (not (string-match cake-controller-testcase-regexp (buffer-file-name)))
+      nil
         (setq cake-plural-name (match-string 2 (buffer-file-name)))
         (cake-convert-plural-to-singular cake-singular-rules)
-        t)
-    nil))
+        (setq cake-current-file-type 'controller-testcase)))
 
 (defun cake-is-fixture-file ()
   "Check whether current file is fixture file."
   (cake-set-app-path)
-  (if (string-match cake-fixture-regexp (buffer-file-name))
-      (progn
-        (setq cake-singular-name (match-string 2 (buffer-file-name)))
-        (cake-convert-singular-to-plural cake-plural-rules)
-        t)
-    nil))
+  (if (not (string-match cake-fixture-regexp (buffer-file-name)))
+      nil
+    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-current-file-type 'fixture)))
 
 (defun cake-is-javascript-file ()
   "Check whether current file is JavaScript file."
   (cake-set-app-path)
-  (if (string-match cake-javascript-regexp (buffer-file-name))
-      t
-    nil))
+  (if (not (string-match cake-javascript-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'javascript)))
+
+(defun cake-is-css-file ()
+  "Check whether current file is JavaScript file."
+  (cake-set-app-path)
+  (if (not (string-match cake-css-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'css)))
 
 (defun cake-is-file ()
   "Check whether current file is CakePHP's file."
   (if (or (cake-is-model-file)
           (cake-is-controller-file)
           (cake-is-view-file)
+          (cake-is-javascript-file)
+          (cake-is-css-file)
           (cake-is-model-testcase-file)
           (cake-is-controller-testcase-file)
           (cake-is-fixture-file))
@@ -412,9 +421,7 @@
 
 (defun cake-set-app-path ()
   "Set app path."
-  (if (cake-is-app-path)
-      t
-    nil))
+  (cake-is-app-path))
 
 (defun cake-is-app-path ()
   "Check app directory name and set regExp."
@@ -423,8 +430,7 @@
       nil
     (string-match "^\\(.+/\\)\\([^/]+\\)/" cake-app-path)
     (setq cake-app-name (match-string 2 cake-app-path))
-    (cake-set-regexp)
-    t))
+    (cake-set-regexp)))
 
 (defun cake-find-app-path ()
   "Find app directory"
@@ -445,10 +451,12 @@
   (setq cake-app-path-regexp (concat "^\\(.+/" cake-app-name "/\\)\\(models\\|views\\|controllers\\|config\\|locale\\|plugins\\|tmp\\|webroot\\|vendors\\|index\.php\\|app_\\)/"))
   (setq cake-model-regexp (concat "^\\(.+/" cake-app-name "/\\)models/\\([^/]+\\)\.php"))
   (setq cake-view-regexp (concat "^\\(.+/" cake-app-name "/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
-  (setq cake-controller-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/\\([^/]+\\)_controller\.php"))
-  (setq cake-model-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/models/\\([^/]+\\)\.test\.php"))
-  (setq cake-controller-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php"))
-  (setq cake-fixture-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php")))
+  (setq cake-controller-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/\\([^/]+\\)_controller\.php$"))
+  (setq cake-model-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"))
+  (setq cake-controller-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
+  (setq cake-fixture-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"))
+  (setq cake-javascript-regexp (concat "^\\(.+/" cake-app-name "/\\)webroot/js/.+\.js$"))
+  (setq cake-css-regexp (concat "^\\(.+/" cake-app-name "/\\)webroot/css/.+\.css$")))
 
 (defun cake-convert-singular-to-plural (list)
   "Convert singular name To plural name."
@@ -571,8 +579,8 @@
 (defun cake-switch-to-fixture ()
   "Switch to fixture."
   (interactive)
-    (if (cake-is-file)
-        (cake-switch-to-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
+  (if (cake-is-file)
+      (cake-switch-to-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
     (message "Can't switch to fixture.")))
 
 (defun cake-switch-to-file (file-path)
