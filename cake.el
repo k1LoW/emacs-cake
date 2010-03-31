@@ -304,6 +304,15 @@
 (defvar cake-controller-regexp "^\\(.+/app/\\)controllers/\\([^/]+\\)_controller\.php$"
   "Contoroller file regExp.")
 
+(defvar cake-behavior-regexp "^\\(.+/app/\\)models/behaviors/\\([^/]+\\)\.php$"
+  "Behavior file regExp.")
+
+(defvar cake-helper-regexp "^\\(.+/app/\\)views/helpers/\\([^/]+\\)\.php$"
+  "Helper file regExp.")
+
+(defvar cake-component-regexp "^\\(.+/app/\\)controllers/components/\\([^/]+\\)\.php$"
+  "Component file regExp.")
+
 (defvar cake-model-testcase-regexp "^\\(.+/app/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"
   "Model testcase file regExp.")
 
@@ -452,6 +461,9 @@
   (setq cake-model-regexp (concat "^\\(.+/" cake-app-name "/\\)models/\\([^/]+\\)\.php"))
   (setq cake-view-regexp (concat "^\\(.+/" cake-app-name "/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
   (setq cake-controller-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/\\([^/]+\\)_controller\.php$"))
+  (setq cake-behavior-regexp (concat "^\\(.+/" cake-app-path "/\\)models/behaviors/\\([^/]+\\)\.php$"))
+  (setq cake-helper-regexp (concat "^\\(.+/" cake-app-path "/\\)views/helpers/\\([^/]+\\)\.php$"))
+  (setq cake-component-regexp (concat "^\\(.+/" cake-app-path "/\\)controllers/components/\\([^/]+\\)\.php$"))
   (setq cake-model-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"))
   (setq cake-controller-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
   (setq cake-fixture-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"))
