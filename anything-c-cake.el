@@ -217,9 +217,7 @@
     (display-to-real . anything-c-cake-set-names2)
     (action
      ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-model)
-                               (goto-char (point-min))
-                               (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
+                               (anything-c-cake-switch-to-file-function "models/")))
      ("Insert" . (lambda (candidate)
                    (insert candidate)))
      )))
