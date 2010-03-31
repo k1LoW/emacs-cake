@@ -130,9 +130,13 @@
 (defun anything-c-cake-switch-to-model ()
   "Switch to model."
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
-      (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+      (progn
+        (cake-is-file)
+        (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
     (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+        (progn
+          (cake-is-file)
+          (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
       (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
 (defun anything-c-cake-switch-to-view ()
@@ -161,6 +165,7 @@
   (progn
     (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (progn
+          (cake-is-file)
           (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
           (goto-char (point-min))
           (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
@@ -174,17 +179,24 @@
 (defun anything-c-cake-switch-to-model ()
   "Switch to model."
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
-      (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+      (progn
+        (cake-is-file)
+        (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
     (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+        (progn
+          (cake-is-file)
+          (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
       (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
 (defun anything-c-cake-switch-to-file-function (dir)
   "Switch to file and search function."
   (if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
       (if (y-or-n-p "Make new file?")
-          (find-file (concat cake-app-path dir cake-singular-name ".php"))
+          (progn
+            (cake-is-file)
+            (find-file (concat cake-app-path dir cake-singular-name ".php")))
         (message (format "Can't find %s" (concat cake-app-path dir cake-singular-name ".php"))))
+    (cake-is-file)
     (find-file (concat cake-app-path dir cake-singular-name ".php"))
     (goto-char (point-min))
     (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
