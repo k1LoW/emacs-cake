@@ -39,7 +39,6 @@
 ;;
 
 ;; Change Log
-;; -.-.-:cake.el 1.2.5
 ;; -.-.-:Revert anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;; 1.2.2:Update function anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;;      :Change keybind 'Cc-o' anything-c-cake-anything-only-model-function -> anything-c-cake-anything-only-function.
