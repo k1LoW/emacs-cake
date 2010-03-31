@@ -1,0 +1,3 @@
+#name : $form->submit(__('Submit',true));
+# --
+\$form->submit(__('${1:Submit}',true));

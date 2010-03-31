@@ -1,0 +1,3 @@
+#name : $html->link(...)
+# --
+\$html->link('${1:link_title}', array('controller' => '${2:controller}', 'action' => '${3:action}'${4:}));

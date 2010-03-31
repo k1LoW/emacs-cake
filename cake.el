@@ -121,6 +121,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Refactor code.
 ;; -.-.-: Modify function cake-switch-to-javascript.
 ;; -.-.-: Modify valiables cake-source-javascript, cake-source-css.
 ;; 1.2.4: Add YASnippet snippets.
@@ -477,11 +478,7 @@
   "Switch to model."
   (interactive)
   (if (cake-is-file)
-      (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
-          (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-        (if (y-or-n-p "Make new file?")
-            (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-          (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php")))))
+      (cake-switch-to-file (concat cake-app-path "models/" cake-singular-name ".php"))
     (message "Can't find model name.")))
 
 (defun cake-switch-to-view ()
@@ -563,35 +560,30 @@
   "Switch to model testcase."
   (interactive)
   (if (cake-is-file)
-      (if (file-exists-p (concat cake-app-path "tests/cases/models/" cake-singular-name ".test.php"))
-          (find-file (concat cake-app-path "tests/cases/models/" cake-singular-name ".test.php"))
-        (if (y-or-n-p "Make new file?")
-            (find-file (concat cake-app-path "models/" cake-singular-name ".test.php"))
-          (message (format "Can't find %s" (concat cake-app-path "tests/cases/models/" cake-singular-name ".test.php")))))
+      (cake-switch-to-file (concat cake-app-path "tests/cases/models/" cake-singular-name ".test.php"))
     (message "Can't switch to model testcase.")))
 
 (defun cake-switch-to-controller-testcase ()
   "Switch to contoroller testcase."
   (interactive)
   (if (cake-is-file)
-      (progn
-        (if (file-exists-p (concat cake-app-path "tests/cases/controllers/" cake-plural-name "_controller.test.php"))
-            (find-file (concat cake-app-path "tests/cases/controllers/" cake-plural-name "_controller.test.php"))
-          (if (y-or-n-p "Make new file?")
-              (find-file (concat cake-app-path "tests/cases/controllers/" cake-plural-name "_controller.test.php"))
-            (message (format "Can't find %s" (concat cake-app-path "tests/cases/controllers/" cake-plural-name "_controller.test.php"))))))
+      (cake-switch-to-file (concat cake-app-path "tests/cases/controllers/" cake-plural-name "_controller.test.php"))
     (message "Can't switch to contoroller testcase.")))
 
 (defun cake-switch-to-fixture ()
   "Switch to fixture."
   (interactive)
-  (if (cake-is-file)
-      (if (file-exists-p (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
-          (find-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
-        (if (y-or-n-p "Make new file?")
-            (find-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
-          (message (format "Can't find %s" (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php")))))
+    (if (cake-is-file)
+        (cake-switch-to-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
     (message "Can't switch to fixture.")))
+
+(defun cake-switch-to-file (file-path)
+  "Switch to file."
+  (if (file-exists-p file-path)
+      (find-file file-path)
+    (if (y-or-n-p "Make new file?")
+        (find-file file-path)
+      (message (format "Can't find %s" file-path)))))
 
 (defun cake-search-functions ()
   "Search function from current buffer."

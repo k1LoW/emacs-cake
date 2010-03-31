@@ -1,0 +1,3 @@
+#name : $html->image(...)
+# --
+\$html->image('${1:image_path}', array(${2:param}));
