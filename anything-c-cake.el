@@ -39,6 +39,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:cake.el 1.2.5
 ;; -.-.-:Revert anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;; 1.2.2:Update function anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;;      :Change keybind 'Cc-o' anything-c-cake-anything-only-model-function -> anything-c-cake-anything-only-function.
@@ -130,30 +131,30 @@
 (defun anything-c-cake-switch-to-model ()
   "Switch to model."
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
-      (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+      (cake-find-file (concat cake-app-path "models/" cake-singular-name ".php"))
     (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+        (cake-find-file (concat cake-app-path "models/" cake-singular-name ".php"))
       (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
 (defun anything-c-cake-switch-to-view ()
   "Switch to view."
   (progn
     (cond ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
           ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
           ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
           ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
           ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
           ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
           ((y-or-n-p "Make new file?")
            (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
              (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+           (cake-find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
           (t (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))))))
 
 (defun anything-c-cake-switch-to-controller ()
@@ -161,31 +162,31 @@
   (progn
     (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (progn
-          (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+          (cake-find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
           (goto-char (point-min))
           (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
               (progn
                 (goto-char (point-min))
                 (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
       (if (y-or-n-p "Make new file?")
-          (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+          (cake-find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
 
 (defun anything-c-cake-switch-to-model ()
   "Switch to model."
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
-      (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+      (cake-find-file (concat cake-app-path "models/" cake-singular-name ".php"))
     (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+        (cake-find-file (concat cake-app-path "models/" cake-singular-name ".php"))
       (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
 (defun anything-c-cake-switch-to-file-function (dir)
   "Switch to file and search function."
   (if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
       (if (y-or-n-p "Make new file?")
-          (find-file (concat cake-app-path dir cake-singular-name ".php"))
+          (cake-find-file (concat cake-app-path dir cake-singular-name ".php"))
         (message (format "Can't find %s" (concat cake-app-path dir cake-singular-name ".php"))))
-    (find-file (concat cake-app-path dir cake-singular-name ".php"))
+    (cake-find-file (concat cake-app-path dir cake-singular-name ".php"))
     (goto-char (point-min))
     (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
 
@@ -343,7 +344,7 @@
      ("Insert msgid." . (lambda (candidate)
                           (insert (anything-c-cake-get-msgid candidate))))
      ("Goto po file" . (lambda (candidate)
-                         (find-file (concat cake-app-path "locale/" cake-po-file-path))
+                         (cake-find-file (concat cake-app-path "locale/" cake-po-file-path))
                          (goto-char (point-min))
                          (re-search-forward (concat "\"" (anything-c-cake-get-msgid candidate) "\"") nil t)))
      )))
@@ -359,7 +360,7 @@
      ("Insert msgid." . (lambda (candidate)
                           (insert candidate)))
      ("Goto po file" . (lambda (candidate)
-                         (find-file (concat cake-app-path "locale/" cake-po-file-path))
+                         (cake-find-file (concat cake-app-path "locale/" cake-po-file-path))
                          (goto-char (point-max)))
       ))))
 
