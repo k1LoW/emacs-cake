@@ -132,11 +132,9 @@
   "Switch to model."
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
       (progn
-        (cake-is-file)
         (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
     (if (y-or-n-p "Make new file?")
         (progn
-          (cake-is-file)
           (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
       (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
@@ -166,7 +164,6 @@
   (progn
     (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (progn
-          (cake-is-file)
           (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
           (goto-char (point-min))
           (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
@@ -181,11 +178,9 @@
   "Switch to model."
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
       (progn
-        (cake-is-file)
         (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
     (if (y-or-n-p "Make new file?")
         (progn
-          (cake-is-file)
           (find-file (concat cake-app-path "models/" cake-singular-name ".php")))
       (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
@@ -320,7 +315,6 @@
                             (syntax-table)))
         (insert-buffer-substring anything-c-cake-po-file-buffer-name))
       )))
-
 (defun anything-c-cake-generate-po-file-buffer (po-file)
   "Generate po file buffer"
   (when (and po-file
