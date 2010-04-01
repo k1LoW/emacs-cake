@@ -39,6 +39,7 @@
 ;;
 
 ;; Change Log
+;; -.-.-:Bug fix (anything-c-cake-switch-to-file-function).
 ;; -.-.-:Revert anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;; 1.2.2:Update function anything-c-cake-anything-only-model-function, anything-c-cake-anything-only-function.
 ;;      :Change keybind 'Cc-o' anything-c-cake-anything-only-model-function -> anything-c-cake-anything-only-function.
@@ -193,10 +194,8 @@
   (if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
       (if (y-or-n-p "Make new file?")
           (progn
-            (cake-is-file)
             (find-file (concat cake-app-path dir cake-singular-name ".php")))
         (message (format "Can't find %s" (concat cake-app-path dir cake-singular-name ".php"))))
-    (cake-is-file)
     (find-file (concat cake-app-path dir cake-singular-name ".php"))
     (goto-char (point-min))
     (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
