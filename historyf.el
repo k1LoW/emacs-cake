@@ -21,7 +21,41 @@
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
+;;; Install
+;; Put this file into load-path'ed directory, and byte compile it if
+;; desired.  And put the following expression into your ~/.emacs.
+;;
+;; (require 'historyf)
+;;
+
 ;;; Commentary:
+
+;;; Commands:
+;;
+;; Below are complete command list:
+;;
+;;  `historyf-back'
+;;    Back file history.
+;;  `historyf-back-same-mode-history'
+;;    Back same mode file history.
+;;  `historyf-forward'
+;;    Forward file history.
+;;  `historyf-clear-history'
+;;    Clear file history.
+;;
+;;; Customizable Options:
+;;
+;; Below are customizable option list:
+;;
+;;  `historyf-major-modes'
+;;    Target major-mode.
+;;    default = (quote (emacs-lisp-mode lisp-interaction-mode c-mode cc-mode c++-mode ...))
+;;  `historyf-minor-modes'
+;;    Target minor-mode.
+;;    default = (quote (cake))
+;;  `historyf-limit'
+;;    File history limit.
+;;    default = 100
 
 ;;; TODO
 ;; historyf-forward-same-mode-history
