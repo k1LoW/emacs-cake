@@ -121,6 +121,13 @@
       (pop historyf-history)            ; pop self
       (setq historyf-mark (nth (- forward-count 1) historyf-history)))))
 
+(defun historyf-clear-history ()
+  "Clear file history."
+  (interactive)
+  (setq historyf-history nil)
+  (setq historyf-mark nil)
+  (setq historyf-forward-temp nil))
+
 (defun historyf-active-mode-list ()
   "Active mode list."
   (let ((active-major-mode (historyf-active-major-mode))
