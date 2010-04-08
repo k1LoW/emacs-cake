@@ -121,6 +121,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Use historyf.el
 ;; 1.2.5: New function cake-switch-to-file-history.
 ;;        Refactor code.
 ;; 1.2.4: Add YASnippet snippets.
@@ -190,6 +191,7 @@
 (require 'cake-inflector)
 (require 'cl)
 (require 'anything)
+(require 'historyf)
 (require 'easy-mmode)
 
 (when (require 'anything-show-completion nil t)
@@ -229,10 +231,6 @@
                     minor-mode-map-alist))
         (run-hooks 'cake-hook))
     nil))
-
-(defadvice find-file (before cake-find-file activate)
-  (if (cake-maybe)
-      (cake-push-file-history)))
 
 (if (fboundp 'define-global-minor-mode)
     (define-global-minor-mode global-cake
@@ -751,12 +749,7 @@
 (defun cake-switch-to-file-history ()
   "Switch to file history."
   (interactive)
-  (let ((file (cake-pop-file-history)))
-    (if (not file)
-        (message "No file history.")
-      (find-file (cdr file))
-      ;; pop self
-      (cake-pop-file-history))))
+  (historyf-back '(cake)))
 
 (defun cake-push-file-history ()
   "Push file history."
