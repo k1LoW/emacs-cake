@@ -32,7 +32,7 @@
   (require 'cl))
 
 (defgroup historyf nil
-  "file history like browser"
+  "File history like browser"
   :group 'lisp
   :prefix "historyf-")
 
@@ -51,10 +51,15 @@
   :type 'list
   :group 'historyf)
 
-(defvar historyf-minor-modes
+(defcustom historyf-minor-modes
   '(cake)
   "Target minor-mode."
   :type 'list
+  :group 'historyf)
+
+(defcustom historyf-limit 100
+"File history limit."
+  :type 'inter
   :group 'historyf)
 
 (defvar historyf-mark nil)
@@ -70,7 +75,9 @@
     (unless (not active-modes)
       (historyf-clear-head)
       (push (random) active-modes)      ; set random
-      (push (cons active-modes (expand-file-name (buffer-file-name))) historyf-history))))
+      (push (cons active-modes (expand-file-name (buffer-file-name))) historyf-history)
+      (unless (< (length historyf-history) historyf-limit)
+        (setq historyf-history (subseq historyf-history 0 (decf historyf-limit)))))))
 
 (defun historyf-clear-head ()
   "Clear head history."
@@ -140,14 +147,14 @@
     active-modes))
 
 (defun historyf-active-major-mode ()
-  "Active major-mode"
+  "Active major-mode."
   (if (and (buffer-file-name)
            (memq major-mode historyf-major-modes))
       major-mode
     nil))
 
 (defun historyf-active-minor-mode-list ()
-  "Active minor-mode list"
+  "Active minor-mode list."
   (let ((active-minor-modes))
     (mapc (lambda (mode) (condition-case nil
                              (if (and (symbolp mode) (symbol-value mode))
