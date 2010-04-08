@@ -93,9 +93,9 @@
         (if historyf-mark
             (setq temp-hist (cadr (memq historyf-mark historyf-history)))
           (setq temp-hist (car historyf-history)))
-      (setq hist (cdr (if historyf-mark
-                          (memq historyf-mark historyf-history)
-                        historyf-history)))
+      (setq hist (if historyf-mark
+                          (cdr (memq historyf-mark historyf-history))
+                        historyf-history))
       (mapc (lambda (h)
               (if (and (intersection (car h) mode-list)
                        (not temp-hist))
