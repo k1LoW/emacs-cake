@@ -92,7 +92,7 @@
   :group 'historyf)
 
 (defcustom historyf-limit 100
-"File history limit."
+  "File history limit."
   :type 'inter
   :group 'historyf)
 
@@ -128,8 +128,8 @@
             (setq temp-hist (cadr (memq historyf-mark historyf-history)))
           (setq temp-hist (car historyf-history)))
       (setq hist (if historyf-mark
-                          (cdr (memq historyf-mark historyf-history))
-                        historyf-history))
+                     (cdr (memq historyf-mark historyf-history))
+                   historyf-history))
       (mapc (lambda (h)
               (if (and (intersection (car h) mode-list)
                        (not temp-hist))
@@ -139,7 +139,10 @@
       (setq historyf-mark nil)
       (find-file (cdr temp-hist))
       (setq historyf-mark temp-hist)
-      (setq historyf-forward-temp (pop historyf-history)))))
+      (if historyf-forward-temp
+          (pop historyf-history)
+        (setq historyf-forward-temp (pop historyf-history)))
+      )))
 
 (defun historyf-back-same-mode-history ()
   "Back same mode file history."
@@ -147,20 +150,23 @@
   (let ((active-modes (historyf-active-mode-list)))
     (historyf-back active-modes)))
 
-(defun historyf-forward ()
+(defun historyf-forward (&optional mode-list)
   "Forward file history."
   (interactive)
-  (let* ((hist-count (length historyf-history))
-         (forward-count (unless (not historyf-mark)
-                          (- hist-count (length (memq historyf-mark historyf-history))))))
-    (unless (not forward-count)
+  (let* ((history-head (unless (not historyf-mark)
+                         (subseq historyf-history 0 (position historyf-mark historyf-history)))))
+    (unless (not history-mark)
       (setq historyf-mark nil)
-      (if (not (equal forward-count 0))
-          (find-file (cdr (nth (- forward-count 1) historyf-history)))
-        (find-file (cdr historyf-forward-temp))
-        (setq historyf-forward-temp nil))
-      (pop historyf-history)            ; pop self
-      (setq historyf-mark (nth (- forward-count 1) historyf-history)))))
+      (if history-head
+          (progn
+            (find-file (cdar (reverse history-head)))
+            (pop historyf-history)
+            (setq historyf-mark (car (reverse history-head))))
+        (unless (not historyf-forward-temp)
+          (find-file (cdr historyf-forward-temp))
+          (setq historyf-forward-temp nil)
+          (pop historyf-history)
+          (setq historyf-mark nil))))))
 
 (defun historyf-clear-history ()
   "Clear file history."
