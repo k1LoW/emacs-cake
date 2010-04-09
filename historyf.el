@@ -158,15 +158,13 @@
     (unless (not history-mark)
       (setq historyf-mark nil)
       (if history-head
-          (progn
-            (find-file (cdar (reverse history-head)))
-            (pop historyf-history)
-            (setq historyf-mark (car (reverse history-head))))
+          (find-file (cdar (reverse history-head)))
         (unless (not historyf-forward-temp)
           (find-file (cdr historyf-forward-temp))
           (setq historyf-forward-temp nil)
-          (pop historyf-history)
-          (setq historyf-mark nil))))))
+          (setq historyf-mark nil)))
+      (pop historyf-history)
+      (setq historyf-mark (car (reverse history-head))))))
 
 (defun historyf-clear-history ()
   "Clear file history."
