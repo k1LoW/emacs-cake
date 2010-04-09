@@ -60,7 +60,7 @@
 ;;    default = 100
 
 ;;; TODO
-;; historyf-forward-same-mode-history
+;; Fix some bug historyf-forward
 
 ;;; Code:
 
