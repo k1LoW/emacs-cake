@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -40,6 +40,8 @@
 ;;    Back same mode file history.
 ;;  `historyf-forward'
 ;;    Forward file history.
+;;  `historyf-forward-same-mode-history'
+;;    Forward same mode file history.
 ;;  `historyf-clear-history'
 ;;    Clear file history.
 ;;
@@ -108,7 +110,7 @@
   (let ((active-modes (historyf-active-mode-list)))
     (unless (not active-modes)
       (historyf-clear-head)
-      (push (random) active-modes)      ; set random
+      (push (random) active-modes)
       (push (cons active-modes (expand-file-name (buffer-file-name))) historyf-history)
       (unless (< (length historyf-history) historyf-limit)
         (setq historyf-history (subseq historyf-history 0 (decf historyf-limit)))))))
@@ -124,9 +126,11 @@
   (interactive)
   (let ((temp-hist))
     (if (not mode-list)
+        ;; no mode-list
         (if historyf-mark
             (setq temp-hist (cadr (memq historyf-mark historyf-history)))
           (setq temp-hist (car historyf-history)))
+      ;; else
       (setq hist (if historyf-mark
                      (cdr (memq historyf-mark historyf-history))
                    historyf-history))
@@ -141,8 +145,7 @@
       (setq historyf-mark temp-hist)
       (if historyf-forward-temp
           (pop historyf-history)
-        (setq historyf-forward-temp (pop historyf-history)))
-      )))
+        (setq historyf-forward-temp (pop historyf-history))))))
 
 (defun historyf-back-same-mode-history ()
   "Back same mode file history."
@@ -153,18 +156,45 @@
 (defun historyf-forward (&optional mode-list)
   "Forward file history."
   (interactive)
-  (let* ((history-head (unless (not historyf-mark)
+  (let* ((temp-hist)
+         (history-head (unless (not historyf-mark)
                          (subseq historyf-history 0 (position historyf-mark historyf-history)))))
-    (unless (not history-mark)
-      (setq historyf-mark nil)
-      (if history-head
-          (find-file (cdar (reverse history-head)))
-        (unless (not historyf-forward-temp)
-          (find-file (cdr historyf-forward-temp))
-          (setq historyf-forward-temp nil)
-          (setq historyf-mark nil)))
-      (pop historyf-history)
-      (setq historyf-mark (car (reverse history-head))))))
+    (if (not mode-list)
+        ;; no mode-list
+        (unless (not history-mark)
+          (setq historyf-mark nil)
+          (if history-head
+              (find-file (cdar (reverse history-head)))
+            (unless (not historyf-forward-temp)
+              (find-file (cdr historyf-forward-temp))
+              (setq historyf-forward-temp nil)))
+          (pop historyf-history)
+          (setq historyf-mark (car (reverse history-head))))
+      ;; else
+      (unless (not history-mark)
+        (setq historyf-mark nil)
+        (if history-head
+            (progn
+              (mapc (lambda (h)
+                      (if (and (intersection (car h) mode-list)
+                               (not temp-hist))
+                          (setq temp-hist h)))
+                    (reverse history-head))
+              (find-file (cdr temp-hist))
+              (pop historyf-history)
+              (setq historyf-mark temp-hist))
+          (unless (not (and historyf-forward-temp
+                   (intersection (car historyf-forward-temp) mode-list)))
+              (find-file (cdr historyf-forward-temp))
+              (setq historyf-forward-temp nil)
+              (pop historyf-history)
+              (setq historyf-mark nil)))))))
+
+(defun historyf-forward-same-mode-history ()
+  "Forward same mode file history."
+  (interactive)
+  (let ((active-modes (historyf-active-mode-list)))
+    (historyf-forward active-modes)))
 
 (defun historyf-clear-history ()
   "Clear file history."
