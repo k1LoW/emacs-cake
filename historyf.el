@@ -127,6 +127,7 @@
   "Back file history."
   (interactive)
   (let ((temp-hist))
+    (ad-disable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
     (if (not mode-list)
         ;; no mode-list
         (if historyf-mark
@@ -145,9 +146,9 @@
       (setq historyf-mark nil)
       (find-file (cdr temp-hist))
       (setq historyf-mark temp-hist)
-      (if historyf-forward-temp
-          (pop historyf-history)
-        (setq historyf-forward-temp (pop historyf-history))))))
+      (unless historyf-forward-temp
+        (setq historyf-forward-temp temp-hist)))
+    (ad-enable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)))
 
 (defun historyf-back-same-mode-history ()
   "Back same mode file history."
@@ -161,6 +162,7 @@
   (let* ((temp-hist)
          (history-head (unless (not historyf-mark)
                          (subseq historyf-history 0 (position historyf-mark historyf-history)))))
+    (ad-disable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
     (if (not mode-list)
         ;; no mode-list
         (unless (not history-mark)
@@ -170,7 +172,6 @@
             (unless (not historyf-forward-temp)
               (find-file (cdr historyf-forward-temp))
               (setq historyf-forward-temp nil)))
-          (pop historyf-history)
           (setq historyf-mark (car (reverse history-head))))
       ;; else
       (unless (not history-mark)
@@ -184,15 +185,13 @@
                     (reverse history-head))
               (unless (not temp-hist)
                 (find-file (cdr temp-hist))
-                (pop historyf-history)
-                (setq historyf-mark temp-hist)
-                ))
+                (setq historyf-mark temp-hist)))
           (unless (not (and historyf-forward-temp
                             (intersection (car historyf-forward-temp) mode-list)))
             (find-file (cdr historyf-forward-temp))
             (setq historyf-forward-temp nil)
-            (pop historyf-history)
-            (setq historyf-mark nil)))))))
+            (setq historyf-mark nil)))))
+    (ad-enable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)))
 
 (defun historyf-forward-same-mode-history ()
   "Forward same mode file history."
