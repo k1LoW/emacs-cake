@@ -165,7 +165,7 @@
     (ad-disable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
     (if (not mode-list)
         ;; no mode-list
-        (unless (not history-mark)
+        (unless (not historyf-mark)
           (setq historyf-mark nil)
           (if history-head
               (find-file (cdar (reverse history-head)))
@@ -174,7 +174,7 @@
               (setq historyf-forward-temp nil)))
           (setq historyf-mark (car (reverse history-head))))
       ;; else
-      (unless (not history-mark)
+      (unless (not historyf-mark)
         (setq historyf-mark nil)
         (if history-head
             (progn
