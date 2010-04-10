@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -107,13 +107,15 @@
 
 (defun historyf-push-history ()
   "Push file history."
-  (let ((active-modes (historyf-active-mode-list)))
+  (let ((active-modes (historyf-active-mode-list))
+        (file (buffer-file-name)))
     (unless (not active-modes)
-      (historyf-clear-head)
-      (push (random) active-modes)
-      (push (cons active-modes (expand-file-name (buffer-file-name))) historyf-history)
-      (unless (< (length historyf-history) historyf-limit)
-        (setq historyf-history (subseq historyf-history 0 (decf historyf-limit)))))))
+      (unless (equal (expand-file-name file) (cdar historyf-history))
+        (historyf-clear-head)
+        (push (random) active-modes)
+        (push (cons active-modes (expand-file-name (buffer-file-name))) historyf-history)
+        (unless (< (length historyf-history) historyf-limit)
+          (setq historyf-history (subseq historyf-history 0 (decf historyf-limit))))))))
 
 (defun historyf-clear-head ()
   "Clear head history."
@@ -180,15 +182,17 @@
                                (not temp-hist))
                           (setq temp-hist h)))
                     (reverse history-head))
-              (find-file (cdr temp-hist))
-              (pop historyf-history)
-              (setq historyf-mark temp-hist))
+              (unless (not temp-hist)
+                (find-file (cdr temp-hist))
+                (pop historyf-history)
+                (setq historyf-mark temp-hist)
+                ))
           (unless (not (and historyf-forward-temp
-                   (intersection (car historyf-forward-temp) mode-list)))
-              (find-file (cdr historyf-forward-temp))
-              (setq historyf-forward-temp nil)
-              (pop historyf-history)
-              (setq historyf-mark nil)))))))
+                            (intersection (car historyf-forward-temp) mode-list)))
+            (find-file (cdr historyf-forward-temp))
+            (setq historyf-forward-temp nil)
+            (pop historyf-history)
+            (setq historyf-mark nil)))))))
 
 (defun historyf-forward-same-mode-history ()
   "Forward same mode file history."
