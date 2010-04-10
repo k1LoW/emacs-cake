@@ -751,16 +751,6 @@
   (interactive)
   (historyf-back '(cake)))
 
-(defun cake-push-file-history ()
-  "Push file history."
-  (unless (not (buffer-file-name))
-    (push (cons cake-current-file-type (expand-file-name (buffer-file-name))) cake-file-history)
-    (setq cake-current-file-type nil)))
-
-(defun cake-pop-file-history ()
-  "Pop file history."
-  (pop cake-file-history))
-
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
   (interactive)
