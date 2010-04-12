@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -117,6 +117,15 @@
         (unless (< (length historyf-history) historyf-limit)
           (setq historyf-history (subseq historyf-history 0 (decf historyf-limit))))))))
 
+(defun historyf-make-history ()
+  "Make file history."
+  (let ((active-modes (historyf-active-mode-list))
+        (file (buffer-file-name)))
+    (unless (not active-modes)
+        (push (random) active-modes)
+        (cons active-modes (expand-file-name (buffer-file-name))))))
+;; (historyf-make-history)
+
 (defun historyf-clear-head ()
   "Clear head history."
   (unless (not historyf-mark)
@@ -128,6 +137,7 @@
   (interactive)
   (let ((temp-hist))
     (ad-disable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
+    (ad-activate 'switch-to-buffer)
     (if (not mode-list)
         ;; no mode-list
         (if historyf-mark
@@ -144,11 +154,12 @@
             hist))
     (unless (not temp-hist)
       (setq historyf-mark nil)
-      (find-file (cdr temp-hist))
-      (setq historyf-mark temp-hist)
       (unless historyf-forward-temp
-        (setq historyf-forward-temp temp-hist)))
-    (ad-enable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)))
+        (setq historyf-forward-temp (historyf-make-history)))
+      (find-file (cdr temp-hist))
+      (setq historyf-mark temp-hist))
+    (ad-enable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
+    (ad-activate 'switch-to-buffer)))
 
 (defun historyf-back-same-mode-history ()
   "Back same mode file history."
@@ -163,6 +174,7 @@
          (history-head (unless (not historyf-mark)
                          (subseq historyf-history 0 (position historyf-mark historyf-history)))))
     (ad-disable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
+    (ad-activate 'switch-to-buffer)
     (if (not mode-list)
         ;; no mode-list
         (unless (not historyf-mark)
@@ -191,7 +203,8 @@
             (find-file (cdr historyf-forward-temp))
             (setq historyf-forward-temp nil)
             (setq historyf-mark nil)))))
-    (ad-enable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)))
+    (ad-enable-advice 'switch-to-buffer 'before 'historyf-switch-to-buffer)
+    (ad-activate 'switch-to-buffer)))
 
 (defun historyf-forward-same-mode-history ()
   "Forward same mode file history."
