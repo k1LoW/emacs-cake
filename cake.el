@@ -66,7 +66,7 @@
 ;;  `cake-switch-to-function'
 ;;    Switch to function.
 ;;  `cake-switch-to-element'
-;;    Switch to element.
+;;    Switch to element. If region is active, make new element file.
 ;;  `cake-switch-to-javascript'
 ;;    Switch to javascript.
 ;;  `cake-switch-to-css'
@@ -75,6 +75,8 @@
 ;;    Omni switch function.
 ;;  `cake-switch-testcase'
 ;;    Switch testcase <-> C/M. Or, switch form fixture to testcase.
+;;  `cake-switch-to-file-history'
+;;    Switch to file history.
 ;;  `cake-open-dir'
 ;;    Open directory.
 ;;  `cake-open-models-dir'
@@ -121,6 +123,7 @@
 ;;    default = nil
 
 ;;; Change Log
+;; -.-.-: Update function cake-switch-to-element. If region is active, make new element file.
 ;; -.-.-: Use historyf.el
 ;; 1.2.5: New function cake-switch-to-file-history.
 ;;        Refactor code.
@@ -672,18 +675,28 @@
         (message "Can't switch to function.")))))
 
 (defun cake-switch-to-element ()
-  "Switch to element."
+  "Switch to element. If region is active, make new element file."
   (interactive)
-  (if (cake-set-app-path)
-      (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
-              (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
-          (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-              (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-            (if (y-or-n-p "Make new file?")
+  (let ((element-name nil))
+    (if (cake-set-app-path)
+        (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
+                (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
+            (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
                 (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-              (message (format "Can't find %s" (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
-        (message "Can't find element name."))
-    (message "Can't set app path.")))
+              (if (y-or-n-p "Make new file?")
+                  (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+                (message (format "Can't find %s" (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
+          (if (not (and (region-active-p)
+                        (y-or-n-p "Can't find element name. Make new file?")))
+              (message "Can't find element name.")
+            (setq element-name (read-string "Element name (no extension): " "element_name"))
+            (if (not element-name)
+                (message "Can't find element name.")
+              (kill-region (point) (mark))
+              (insert (concat "<?php echo $this->element('" element-name "'); ?>"))
+              (find-file (concat cake-app-path "views/elements/" element-name "." cake-view-extension))
+              (yank))))
+      (message "Can't set app path."))))
 
 (defun cake-switch-to-javascript ()
   "Switch to javascript."
