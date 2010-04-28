@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.4
+;; Version: 1.2.5
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -66,7 +66,7 @@
 ;;  `cake-switch-to-function'
 ;;    Switch to function.
 ;;  `cake-switch-to-element'
-;;    Switch to element.
+;;    Switch to element. If region is active, make new element file.
 ;;  `cake-switch-to-javascript'
 ;;    Switch to javascript.
 ;;  `cake-switch-to-css'
@@ -75,6 +75,8 @@
 ;;    Omni switch function.
 ;;  `cake-switch-testcase'
 ;;    Switch testcase <-> C/M. Or, switch form fixture to testcase.
+;;  `cake-switch-to-file-history'
+;;    Switch to file history.
 ;;  `cake-open-dir'
 ;;    Open directory.
 ;;  `cake-open-models-dir'
@@ -124,6 +126,10 @@
 ;; -.-.-: Refactor code.
 ;; -.-.-: Modify function cake-switch-to-javascript.
 ;; -.-.-: Modify valiables cake-source-javascript, cake-source-css.
+;; -.-.-: Update function cake-switch-to-element. If region is active, make new element file.
+;; -.-.-: Use historyf.el
+;; 1.2.5: New function cake-switch-to-file-history.
+;;        Refactor code.
 ;; 1.2.4: Add YASnippet snippets.
 ;;        New function cake-switch-to-css. Modify cake-switch.
 ;;        Modifiy cake-switch.
@@ -191,6 +197,7 @@
 (require 'cake-inflector)
 (require 'cl)
 (require 'anything)
+(require 'historyf)
 (require 'easy-mmode)
 
 (when (require 'anything-show-completion nil t)
@@ -240,7 +247,8 @@
   "What buffer `cake' prefers."
   (if (and (not (minibufferp (current-buffer)))
            (cake-set-app-path))
-      (cake 1)))
+      (cake 1)
+    nil))
 
 ;; key-map
 (defvar cake-key-map
@@ -254,6 +262,7 @@
     (define-key map "\C-cf" 'cake-switch-to-function)
     (define-key map "\C-ce" 'cake-switch-to-element)
     (define-key map "\C-cj" 'cake-switch-to-javascript)
+    (define-key map "\C-cb" 'cake-switch-to-file-history)
     (define-key map "\C-cM" 'cake-open-models-dir)
     (define-key map "\C-cV" 'cake-open-views-dir)
     (define-key map "\C-cC" 'cake-open-controllers-dir)
@@ -306,6 +315,15 @@
 (defvar cake-controller-regexp "^\\(.+/app/\\)controllers/\\([^/]+\\)_controller\.php$"
   "Contoroller file regExp.")
 
+(defvar cake-behavior-regexp "^\\(.+/app/\\)models/behaviors/\\([^/]+\\)\.php$"
+  "Behavior file regExp.")
+
+(defvar cake-helper-regexp "^\\(.+/app/\\)views/helpers/\\([^/]+\\)\.php$"
+  "Helper file regExp.")
+
+(defvar cake-component-regexp "^\\(.+/app/\\)controllers/components/\\([^/]+\\)\.php$"
+  "Component file regExp.")
+
 (defvar cake-model-testcase-regexp "^\\(.+/app/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"
   "Model testcase file regExp.")
 
@@ -318,91 +336,127 @@
 (defvar cake-javascript-regexp "^\\(.+/app/\\)webroot/js/.+\.js$"
   "JavaScript file regExp.")
 
+(defvar cake-css-regexp "^\\(.+/app/\\)webroot/css/.+\.css$"
+  "Css file regExp.")
+
+(defvar cake-current-file-type nil
+  "Current file type.")
+
+(defvar cake-file-history nil
+  "Switch file history.")
+
 (defvar cake-hook nil
-  "")
+  "Hook")
 
 (defun cake-is-model-file ()
   "Check whether current file is model file."
   (cake-set-app-path)
-  (if (string-match cake-model-regexp (buffer-file-name))
-      (progn
-        (setq cake-singular-name (match-string 2 (buffer-file-name)))
-        (cake-convert-singular-to-plural cake-plural-rules)
-        t)
-    nil))
+  (if (not (string-match cake-model-regexp (buffer-file-name)))
+      nil
+    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-current-file-type 'model)))
 
 (defun cake-is-view-file ()
   "Check whether current file is view file."
   (cake-set-app-path)
-  (if (string-match cake-view-regexp (buffer-file-name))
-      (progn
-        (setq cake-plural-name (match-string 2 (buffer-file-name)))
-        (setq cake-action-name (match-string 4 (buffer-file-name)))
-        (setq cake-view-extension (match-string 5 (buffer-file-name)))
-        (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
-        (cake-convert-plural-to-singular cake-singular-rules)
-        t)
-    nil))
+  (if (not (string-match cake-view-regexp (buffer-file-name)))
+      nil
+    (setq cake-plural-name (match-string 2 (buffer-file-name)))
+    (setq cake-action-name (match-string 4 (buffer-file-name)))
+    (setq cake-view-extension (match-string 5 (buffer-file-name)))
+    (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
+    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-current-file-type 'view)))
 
 (defun cake-is-controller-file ()
   "Check whether current file is contoroller file."
   (cake-set-app-path)
-  (if (string-match cake-controller-regexp (buffer-file-name))
-      (progn
-        (setq cake-plural-name (match-string 2 (buffer-file-name)))
-        (save-excursion
-          (if
-              (not (re-search-backward "function[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(" nil t))
-              (re-search-forward "function[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(" nil t)))
-        (setq cake-action-name (match-string 1))
-        (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
-        (setq cake-snake-action-name (cake-snake cake-action-name))
-        (cake-convert-plural-to-singular cake-singular-rules)
-        t)
-    nil))
+  (if (not (string-match cake-controller-regexp (buffer-file-name)))
+      nil
+    (setq cake-plural-name (match-string 2 (buffer-file-name)))
+    (save-excursion
+      (if
+          (not (re-search-backward "function[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(" nil t))
+          (re-search-forward "function[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(" nil t)))
+    (setq cake-action-name (match-string 1))
+    (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
+    (setq cake-snake-action-name (cake-snake cake-action-name))
+    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-current-file-type 'controller)))
+
+(defun cake-is-behavior-file ()
+  "Check whether current file is Behavior file."
+  (cake-set-app-path)
+  (if (not (string-match cake-behavior-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'behavior)))
+
+(defun cake-is-helper-file ()
+  "Check whether current file is Helper file."
+  (cake-set-app-path)
+  (if (not (string-match cake-helper-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'helper)))
+
+(defun cake-is-component-file ()
+  "Check whether current file is Component file."
+  (cake-set-app-path)
+  (if (not (string-match cake-component-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'component)))
 
 (defun cake-is-model-testcase-file ()
   "Check whether current file is model testcase file."
   (cake-set-app-path)
-  (if (string-match cake-model-testcase-regexp (buffer-file-name))
-      (progn
-        (setq cake-singular-name (match-string 2 (buffer-file-name)))
-        (cake-convert-singular-to-plural cake-plural-rules)
-        t)
-    nil))
+  (if (not (string-match cake-model-testcase-regexp (buffer-file-name)))
+      nil
+    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-current-file-type 'model-testcase)))
 
 (defun cake-is-controller-testcase-file ()
   "Check whether current file is controller testcase file."
   (cake-set-app-path)
-  (if (string-match cake-controller-testcase-regexp (buffer-file-name))
-      (progn
-        (setq cake-plural-name (match-string 2 (buffer-file-name)))
-        (cake-convert-plural-to-singular cake-singular-rules)
-        t)
-    nil))
+  (if (not (string-match cake-controller-testcase-regexp (buffer-file-name)))
+      nil
+    (setq cake-plural-name (match-string 2 (buffer-file-name)))
+    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-current-file-type 'controller-testcase)))
 
 (defun cake-is-fixture-file ()
   "Check whether current file is fixture file."
   (cake-set-app-path)
-  (if (string-match cake-fixture-regexp (buffer-file-name))
-      (progn
-        (setq cake-singular-name (match-string 2 (buffer-file-name)))
-        (cake-convert-singular-to-plural cake-plural-rules)
-        t)
-    nil))
+  (if (not (string-match cake-fixture-regexp (buffer-file-name)))
+      nil
+    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-current-file-type 'fixture)))
 
 (defun cake-is-javascript-file ()
   "Check whether current file is JavaScript file."
   (cake-set-app-path)
-  (if (string-match cake-javascript-regexp (buffer-file-name))
-      t
-    nil))
+  (if (not (string-match cake-javascript-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'javascript)))
+
+(defun cake-is-css-file ()
+  "Check whether current file is JavaScript file."
+  (cake-set-app-path)
+  (if (not (string-match cake-css-regexp (buffer-file-name)))
+      nil
+    (setq cake-current-file-type 'css)))
 
 (defun cake-is-file ()
   "Check whether current file is CakePHP's file."
   (if (or (cake-is-model-file)
           (cake-is-controller-file)
           (cake-is-view-file)
+          (cake-is-behavior-file)
+          (cake-is-helper-file)
+          (cake-is-component-file)
+          (cake-is-javascript-file)
+          (cake-is-css-file)
           (cake-is-model-testcase-file)
           (cake-is-controller-testcase-file)
           (cake-is-fixture-file))
@@ -414,9 +468,7 @@
 
 (defun cake-set-app-path ()
   "Set app path."
-  (if (cake-is-app-path)
-      t
-    nil))
+  (cake-is-app-path))
 
 (defun cake-is-app-path ()
   "Check app directory name and set regExp."
@@ -425,8 +477,7 @@
       nil
     (string-match "^\\(.+/\\)\\([^/]+\\)/" cake-app-path)
     (setq cake-app-name (match-string 2 cake-app-path))
-    (cake-set-regexp)
-    t))
+    (cake-set-regexp)))
 
 (defun cake-find-app-path ()
   "Find app directory"
@@ -447,10 +498,15 @@
   (setq cake-app-path-regexp (concat "^\\(.+/" cake-app-name "/\\)\\(models\\|views\\|controllers\\|config\\|locale\\|plugins\\|tmp\\|webroot\\|vendors\\|index\.php\\|app_\\)/"))
   (setq cake-model-regexp (concat "^\\(.+/" cake-app-name "/\\)models/\\([^/]+\\)\.php"))
   (setq cake-view-regexp (concat "^\\(.+/" cake-app-name "/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
-  (setq cake-controller-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/\\([^/]+\\)_controller\.php"))
-  (setq cake-model-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/models/\\([^/]+\\)\.test\.php"))
-  (setq cake-controller-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php"))
-  (setq cake-fixture-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php")))
+  (setq cake-controller-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/\\([^/]+\\)_controller\.php$"))
+  (setq cake-behavior-regexp (concat "^\\(.+/" cake-app-name "/\\)models/behaviors/\\([^/]+\\)\.php$"))
+  (setq cake-helper-regexp (concat "^\\(.+/" cake-app-name "/\\)views/helpers/\\([^/]+\\)\.php$"))
+  (setq cake-component-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/components/\\([^/]+\\)\.php$"))
+  (setq cake-model-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"))
+  (setq cake-controller-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
+  (setq cake-fixture-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"))
+  (setq cake-javascript-regexp (concat "^\\(.+/" cake-app-name "/\\)webroot/js/.+\.js$"))
+  (setq cake-css-regexp (concat "^\\(.+/" cake-app-name "/\\)webroot/css/.+\.css$")))
 
 (defun cake-convert-singular-to-plural (list)
   "Convert singular name To plural name."
@@ -491,7 +547,8 @@
           (setq view-files (cake-set-view-list))
           (if view-files
               (cond
-               ((= 1 (length view-files)) (find-file (concat cake-app-path "views/" cake-plural-name "/" (car view-files))))
+               ((= 1 (length view-files))
+                (find-file (concat cake-app-path "views/" cake-plural-name "/" (car view-files))))
                (t (anything
                    '(((name . "Switch to view")
                       (candidates . view-files)
@@ -573,8 +630,8 @@
 (defun cake-switch-to-fixture ()
   "Switch to fixture."
   (interactive)
-    (if (cake-is-file)
-        (cake-switch-to-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
+  (if (cake-is-file)
+      (cake-switch-to-file (concat cake-app-path "tests/fixtures/" cake-singular-name "_fixture.php"))
     (message "Can't switch to fixture.")))
 
 (defun cake-switch-to-file (file-path)
@@ -621,18 +678,28 @@
         (message "Can't switch to function.")))))
 
 (defun cake-switch-to-element ()
-  "Switch to element."
+  "Switch to element. If region is active, make new element file."
   (interactive)
-  (if (cake-set-app-path)
-      (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
-              (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
-          (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-              (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-            (if (y-or-n-p "Make new file?")
+  (let ((element-name nil))
+    (if (cake-set-app-path)
+        (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
+                (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
+            (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
                 (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-              (message (format "Can't find %s" (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
-        (message "Can't find element name."))
-    (message "Can't set app path.")))
+              (if (y-or-n-p "Make new file?")
+                  (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+                (message (format "Can't find %s" (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
+          (if (not (and (region-active-p)
+                        (y-or-n-p "Can't find element name. Make new file?")))
+              (message "Can't find element name.")
+            (setq element-name (read-string "Element name (no extension): " "element_name"))
+            (if (not element-name)
+                (message "Can't find element name.")
+              (kill-region (point) (mark))
+              (insert (concat "<?php echo $this->element('" element-name "'); ?>"))
+              (find-file (concat cake-app-path "views/elements/" element-name "." cake-view-extension))
+              (yank))))
+      (message "Can't set app path."))))
 
 (defun cake-switch-to-javascript ()
   "Switch to javascript."
@@ -697,26 +764,32 @@
         ((cake-is-fixture-file) (cake-switch-to-model-testcase))
         (t (message "Current buffer is neither model nor controller."))))
 
+(defun cake-switch-to-file-history ()
+  "Switch to file history."
+  (interactive)
+  (historyf-back '(cake)))
+
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
   (interactive)
   (let ((files nil))
     (if (cake-set-app-path)
         (if (file-directory-p (concat cake-app-path dir))
-            (progn
-              (if recursive
-                  (setq files (cake-get-recuresive-file-list dir))
-                (setq files (directory-files (concat cake-app-path dir))))
-              (anything
-               '(((name . "Open directory")
-                  (candidates . files)
-                  (display-to-real . (lambda (candidate)
-                                       (concat cake-app-path dir candidate)
-                                       ))
-                  (header-name . (lambda (name)
-                                   (format "%s: %s" name dir)))
-                  (type . file)))
-               nil nil nil nil))
+            (anything
+             '(((name . "Open directory")
+                (init . (lambda ()
+                          (cake-is-file)
+                          (if recursive
+                              (setq files (cake-get-recuresive-file-list dir))
+                            (setq files (directory-files (concat cake-app-path dir))))))
+                (candidates . files)
+                (display-to-real . (lambda (candidate)
+                                     (concat cake-app-path dir candidate)
+                                     ))
+                (header-name . (lambda (name)
+                                 (format "%s: %s" name dir)))
+                (type . file)))
+             nil nil nil nil)
           (message (concat "Can't open " cake-app-path dir)))
       (message "Can't set app path."))))
 
