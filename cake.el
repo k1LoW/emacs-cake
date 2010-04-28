@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.5
+;; Version: 1.2.6
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -103,6 +103,8 @@
 ;;    Open css directory.
 ;;  `cake-open-tests-dir'
 ;;    Open css directory.
+;;  `cake-set-version'
+;;    Set CakePHP version.
 ;;  `cake-complete'
 ;;    Insert CakePHP code.
 ;;  `cake-tail-log'
@@ -121,13 +123,17 @@
 ;;  `cake-use-imenu'
 ;;    Use imenu function
 ;;    default = nil
+;;  `cake-core-version'
+;;    CakePHP version
+;;    default = "1.3"
 
 ;;; Change Log
-;; -.-.-: Refactor code.
-;; -.-.-: Modify function cake-switch-to-javascript.
-;; -.-.-: Modify valiables cake-source-javascript, cake-source-css.
-;; -.-.-: Update function cake-switch-to-element. If region is active, make new element file.
-;; -.-.-: Use historyf.el
+;; 1.2.6: Support CakePHP 1.3.
+;;        Refactor code.
+;;        Modify function cake-switch-to-javascript.
+;;        Modify valiables cake-source-javascript, cake-source-css.
+;;        Update function cake-switch-to-element. If region is active, make new element file.
+;;        Use historyf.el
 ;; 1.2.5: New function cake-switch-to-file-history.
 ;;        Refactor code.
 ;; 1.2.4: Add YASnippet snippets.
@@ -222,6 +228,11 @@
 (defcustom cake-use-imenu nil
   "Use imenu function"
   :type 'boolean
+  :group 'cake)
+
+(defcustom cake-core-version "1.3"
+  "CakePHP version"
+  :type 'string
   :group 'cake)
 
 ;;(global-set-key "\C-c\C-v" 'cake)
@@ -706,7 +717,7 @@
   (interactive)
   (if (cake-set-app-path)
       (if (or (string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
-              (string-match "$this->Html->script( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)));;1.3x
+              (string-match "$this->Html->script( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))) ;;1.3x
           (cond
            ((file-exists-p (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line))))
             (find-file (concat cake-app-path "webroot/js/" (match-string 1 (cake-get-current-line)))))
@@ -722,7 +733,8 @@
   "Switch to stylesheet."
   (interactive)
   (if (cake-set-app-path)
-      (if (string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
+      (if (or (string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
+              (string-match "$this->Html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)))
           (cond
            ((file-exists-p (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line))))
             (find-file (concat cake-app-path "webroot/css/" (match-string 1 (cake-get-current-line)))))
@@ -741,12 +753,13 @@
       (cond
        ;;cake-switch-to-javascript
        ((or (string-match "$javascript->link( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
-              (string-match "$this->Html->script( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))) (cake-switch-to-javascript))
+            (string-match "$this->Html->script( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))) (cake-switch-to-javascript)) ;;1.3x
        ;;cake-switch-to-element
        ((or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
             (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))) (cake-switch-to-element))
        ;;cake-switch-to-css
-       ((string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line)) (cake-switch-to-css))
+       ((or (string-match "$html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))
+            (string-match "$this->html->css( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*" (cake-get-current-line))) (cake-switch-to-css)) ;;1.3x
        ;;cake-switch-to-controller
        ((cake-is-view-file) (cake-switch-to-controller))
        ;;cake-switch-to-view
@@ -882,6 +895,20 @@
   (interactive)
   (cake-open-dir "tests/" t))
 
+(defvar cake-source-version
+  '((name . "CakePHP core version")
+    (candidates . (lambda () (list "1.2" "1.3")))
+    (action
+     ("Set Version" . (lambda (candidate)
+                        (setq cake-core-version candidate))))))
+
+(defun cake-set-version ()
+  "Set CakePHP version."
+  (interactive)
+  (if (cake-set-app-path)
+      (anything '(cake-source-version)
+                nil "Version: " nil)))
+
 (defvar cake-source-models
   '((name . "Cake Model")
     (candidates . (lambda ()
@@ -906,7 +933,9 @@
                     (mapcar (function (lambda (c)
                                         (if (string-match (concat "\\.js$") c)
                                             (setq c (replace-match "" nil nil c)))
-                                        (concat "$this->Html->script('" c "');")))
+                                        (if (string-match "1\.3" cake-core-version)
+                                            (concat "$this->Html->script('" c "');")
+                                          (concat "$javascript->link('" c "');"))))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "webroot/js/" x))))
                                        (cake-get-recuresive-file-list "webroot/js/")))))
@@ -921,7 +950,9 @@
                     (mapcar (function (lambda (c)
                                         (if (string-match (concat "\\.css$") c)
                                             (setq c (replace-match "" nil nil c)))
-                                        (concat "$this->Html->css('" c "');")))
+                                        (if (string-match "1\.3" cake-core-version)
+                                            (concat "$this->Html->css('" c "');")
+                                          (concat "$html->css('" c "');"))))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "webroot/css/" x))))
                                        (cake-get-recuresive-file-list "webroot/css/")))))
