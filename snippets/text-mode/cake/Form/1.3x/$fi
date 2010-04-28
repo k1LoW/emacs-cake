@@ -1,0 +1,3 @@
+#name : $this->Form->input(...)
+# --
+\$this->Form->input('${1:field_name}', array('type' => '${2:text}'${3:}));
