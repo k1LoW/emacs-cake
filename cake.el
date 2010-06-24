@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.6
+;; Version: 1.2.7
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -128,6 +128,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.2.7: Update anything-c-cake.el.
 ;; 1.2.6: Support CakePHP 1.3.
 ;;        Refactor code.
 ;;        Modify function cake-switch-to-javascript.
