@@ -173,9 +173,9 @@
               (progn
                 (goto-char (point-min))
                 (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
-      (if (file-exists-p (concat cake-app-path "../" cake-plural-name "_controller.php"))
+      (if (file-exists-p (concat cake-app-path cake-plural-name "_controller.php"))
           (progn
-            (find-file (concat cake-app-path "../" cake-plural-name "_controller.php"))
+            (find-file (concat cake-app-path cake-plural-name "_controller.php"))
             (goto-char (point-min))
             (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
                 (progn
