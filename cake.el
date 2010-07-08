@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.2.7
+;; Version: 1.2.6
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -128,7 +128,6 @@
 ;;    default = "1.3"
 
 ;;; Change Log
-;; 1.2.7: Update anything-c-cake.el.
 ;; 1.2.6: Support CakePHP 1.3.
 ;;        Refactor code.
 ;;        Modify function cake-switch-to-javascript.
@@ -786,19 +785,20 @@
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
   (interactive)
-  (let ((files nil))
+  (let ((files nil)
+        (path nil))
     (if (cake-set-app-path)
         (if (file-directory-p (concat cake-app-path dir))
             (anything
              '(((name . "Open directory")
                 (init . (lambda ()
-                          (cake-is-file)
+                          (setq path cake-app-path)
                           (if recursive
                               (setq files (cake-get-recuresive-file-list dir))
-                            (setq files (directory-files (concat cake-app-path dir))))))
+                            (setq files (directory-files (concat path dir))))))
                 (candidates . files)
                 (display-to-real . (lambda (candidate)
-                                     (concat cake-app-path dir candidate)
+                                     (concat path dir candidate)
                                      ))
                 (header-name . (lambda (name)
                                  (format "%s: %s" name dir)))

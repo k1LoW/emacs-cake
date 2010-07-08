@@ -134,17 +134,10 @@
     (setq cake-lower-camelized-action-name cake-action-name)
     (setq cake-snake-action-name (cake-snake cake-action-name))))
 
-(defun anything-c-cake-switch-to-model ()
-  "Switch to model."
-  (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
-      (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-    (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-      (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
-
 (defun anything-c-cake-switch-to-view ()
   "Switch to view."
   (progn
+    (cake-set-app-path)
     (cond ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
            (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
           ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
@@ -165,6 +158,7 @@
 
 (defun anything-c-cake-switch-to-controller ()
   "Switch to contoroller."
+  (cake-set-app-path)
     (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
         (progn
           (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
@@ -187,6 +181,7 @@
 
 (defun anything-c-cake-switch-to-model ()
   "Switch to model."
+  (cake-set-app-path)
   (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
       (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
     (if (y-or-n-p "Make new file?")
@@ -195,6 +190,7 @@
 
 (defun anything-c-cake-switch-to-file-function (dir)
   "Switch to file and search function."
+  (cake-set-app-path)
   (if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
       (if (y-or-n-p "Make new file?")
           (find-file (concat cake-app-path dir cake-singular-name ".php"))
@@ -350,6 +346,8 @@
                                      (insert (concat "__('" (anything-c-cake-get-msgid candidate) "',true)"))))
      ("Insert msgid." . (lambda (candidate)
                           (insert (anything-c-cake-get-msgid candidate))))
+     ("Insert msgstr." . (lambda (candidate)
+                          (insert (anything-c-cake-get-msgstr candidate))))
      ("Goto po file" . (lambda (candidate)
                          (find-file (concat cake-app-path "locale/" cake-po-file-path))
                          (goto-char (point-min))
@@ -373,6 +371,12 @@
   "Set msgid"
   (progn
     (string-match "\\(.+\\) /" candidate)
+    (match-string 1 candidate)))
+
+(defun anything-c-cake-get-msgstr (candidate)
+  "Set msgstr"
+  (progn
+    (string-match "/ \\(.+\\)$" candidate)
     (match-string 1 candidate)))
 
 (defun anything-c-cake-anything-only-source-cake ()
