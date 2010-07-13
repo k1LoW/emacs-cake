@@ -305,7 +305,7 @@
 
 (defun anything-c-cake-create-po-file-buffer ()
   "Create buffer from po file."
-  (let ((anything-buffer (anything-candidate-buffer 'global)))
+  (let ((anything-buffer (anything-candidate-buffer 'global)))    
     (catch 'invalid-po-file
       (unless (anything-c-cake-generate-po-file-buffer (concat cake-app-path "locale/" cake-po-file-path))
         (message "Can't find po file: %s" (concat cake-app-path "locale/" cake-po-file-path))
@@ -337,7 +337,10 @@
 
 (defvar anything-c-source-cake-po
   '((name . "Cake po file's msgid and msgstr")
-    (init . (anything-c-cake-create-po-file-buffer))
+    (init . (lambda () 
+              (cake-set-app-path)
+              (setq path cake-app-path)
+              (anything-c-cake-create-po-file-buffer)))
     (candidates-in-buffer)
     (action
      ("Insert __('msgid')." . (lambda (candidate)
@@ -349,12 +352,15 @@
      ("Insert msgstr." . (lambda (candidate)
                           (insert (anything-c-cake-get-msgstr candidate))))
      ("Goto po file" . (lambda (candidate)
-                         (find-file (concat cake-app-path "locale/" cake-po-file-path))
+                         (find-file (concat path "locale/" cake-po-file-path))
                          (goto-char (point-min))
                          (re-search-forward (concat "\"" (anything-c-cake-get-msgid candidate) "\"") nil t))))))
 
 (defvar anything-c-source-cake-po-not-found
   '((name . "Create __()")
+    (init . (lambda () 
+              (cake-set-app-path)
+              (setq path cake-app-path)))
     (dummy)
     (action
      ("Insert __('msgid')." . (lambda (candidate)
@@ -364,7 +370,7 @@
      ("Insert msgid." . (lambda (candidate)
                           (insert candidate)))
      ("Goto po file" . (lambda (candidate)
-                         (find-file (concat cake-app-path "locale/" cake-po-file-path))
+                         (find-file (concat path "locale/" cake-po-file-path))
                          (goto-char (point-max)))))))
 
 (defun anything-c-cake-get-msgid (candidate)
