@@ -1,3 +1,3 @@
 #name : $this->Html->css(...)
 # --
-\$this->Html->image('${1:css_path}');
+\$this->Html->css('${1:css_path}');
