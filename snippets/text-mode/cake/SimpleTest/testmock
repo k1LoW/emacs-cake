@@ -1,0 +1,11 @@
+#name : Mock
+# --
+/**
+ * Mock
+ */
+class Test${1:Model} extends $1{
+    var \$useTable = false;
+}
+Mock::generatePartial(
+                      'Test$1', 'Mock$1',
+                      array('find', 'save', 'delete'));
