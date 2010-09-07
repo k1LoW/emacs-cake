@@ -279,9 +279,6 @@
   (make-sparse-keymap)
   "Keymap for Cake.")
 
-(defvar cake-app-name "app"
-  "CakePHP app directory name")
-
 (defvar cake-app-path nil
   "CakePHP app directory path.")
 
@@ -302,9 +299,6 @@
 
 (defvar cake-plural-name nil
   "CakePHP current plural name.")
-
-(defvar cake-app-path-regexp "^\\(.+/app/\\)\\(models\\|views\\|controllers\\|config\\|locale\\|plugins\\|tmp\\|webroot\\|vendors\\|index\.php\\|app_\\)/"
-  "App path regExp.")
 
 (defvar cake-model-regexp "^\\(.+/app/\\)models/\\([^/]+\\)\.php$"
   "Model file regExp.")
@@ -508,8 +502,6 @@
   (setq cake-app-path (cake-find-app-path))
   (if (not cake-app-path)
       nil
-    (string-match "^\\(.+/\\)\\([^/]+\\)/" cake-app-path)
-    (setq cake-app-name (match-string 2 cake-app-path))
     (cake-set-regexp)))
 
 (defun cake-find-app-path ()
@@ -528,18 +520,17 @@
 
 (defun cake-set-regexp ()
   "Set regExp."
-  (setq cake-app-path-regexp (concat "^\\(.+/" cake-app-name "/\\)\\(models\\|views\\|controllers\\|config\\|locale\\|plugins\\|tmp\\|webroot\\|vendors\\|index\.php\\|app_\\)/"))
-  (setq cake-model-regexp (concat "^\\(.+/" cake-app-name "/\\)models/\\([^/]+\\)\.php"))
-  (setq cake-view-regexp (concat "^\\(.+/" cake-app-name "/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
-  (setq cake-controller-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/\\([^/]+\\)_controller\.php$"))
-  (setq cake-behavior-regexp (concat "^\\(.+/" cake-app-name "/\\)models/behaviors/\\([^/]+\\)\.php$"))
-  (setq cake-helper-regexp (concat "^\\(.+/" cake-app-name "/\\)views/helpers/\\([^/]+\\)\.php$"))
-  (setq cake-component-regexp (concat "^\\(.+/" cake-app-name "/\\)controllers/components/\\([^/]+\\)\.php$"))
-  (setq cake-model-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"))
-  (setq cake-controller-testcase-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
-  (setq cake-fixture-regexp (concat "^\\(.+/" cake-app-name "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"))
-  (setq cake-javascript-regexp (concat "^\\(.+/" cake-app-name "/\\)webroot/js/.+\.js$"))
-  (setq cake-css-regexp (concat "^\\(.+/" cake-app-name "/\\)webroot/css/.+\.css$")))
+  (setq cake-model-regexp (concat cake-app-path "/\\)models/\\([^/]+\\)\.php"))
+  (setq cake-view-regexp (concat cake-app-path "/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
+  (setq cake-controller-regexp (concat cake-app-path "/\\)controllers/\\([^/]+\\)_controller\.php$"))
+  (setq cake-behavior-regexp (concat cake-app-path "/\\)models/behaviors/\\([^/]+\\)\.php$"))
+  (setq cake-helper-regexp (concat cake-app-path "/\\)views/helpers/\\([^/]+\\)\.php$"))
+  (setq cake-component-regexp (concat cake-app-path "/\\)controllers/components/\\([^/]+\\)\.php$"))
+  (setq cake-model-testcase-regexp (concat cake-app-path "/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"))
+  (setq cake-controller-testcase-regexp (concat cake-app-path "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
+  (setq cake-fixture-regexp (concat cake-app-path "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"))
+  (setq cake-javascript-regexp (concat cake-app-path "/\\)webroot/js/.+\.js$"))
+  (setq cake-css-regexp (concat cake-app-path "/\\)webroot/css/.+\.css$")))
 
 (defun cake-convert-singular-to-plural (list)
   "Convert singular name To plural name."
