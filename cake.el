@@ -300,37 +300,37 @@
 (defvar cake-plural-name nil
   "CakePHP current plural name.")
 
-(defvar cake-model-regexp "^\\(.+/app/\\)models/\\([^/]+\\)\.php$"
+(defvar cake-model-regexp "^.+/app/models/\\([^/]+\\)\.php$"
   "Model file regExp.")
 
-(defvar cake-view-regexp "^\\(.+/app/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"
+(defvar cake-view-regexp "^.+/app/views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"
   "View file regExp.")
 
-(defvar cake-controller-regexp "^\\(.+/app/\\)controllers/\\([^/]+\\)_controller\.php$"
+(defvar cake-controller-regexp "^.+/app/controllers/\\([^/]+\\)_controller\.php$"
   "Contoroller file regExp.")
 
-(defvar cake-behavior-regexp "^\\(.+/app/\\)models/behaviors/\\([^/]+\\)\.php$"
+(defvar cake-behavior-regexp "^.+/app/models/behaviors/\\([^/]+\\)\.php$"
   "Behavior file regExp.")
 
-(defvar cake-helper-regexp "^\\(.+/app/\\)views/helpers/\\([^/]+\\)\.php$"
+(defvar cake-helper-regexp "^.+/app/views/helpers/\\([^/]+\\)\.php$"
   "Helper file regExp.")
 
-(defvar cake-component-regexp "^\\(.+/app/\\)controllers/components/\\([^/]+\\)\.php$"
+(defvar cake-component-regexp "^.+/app/controllers/components/\\([^/]+\\)\.php$"
   "Component file regExp.")
 
-(defvar cake-model-testcase-regexp "^\\(.+/app/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"
+(defvar cake-model-testcase-regexp "^.+/app/tests/cases/models/\\([^/]+\\)\.test\.php$"
   "Model testcase file regExp.")
 
-(defvar cake-controller-testcase-regexp "^\\(.+/app/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"
+(defvar cake-controller-testcase-regexp "^.+/app/tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"
   "Contoroller testcase file regExp.")
 
-(defvar cake-fixture-regexp "^\\(.+/app/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"
+(defvar cake-fixture-regexp "^.+/app/tests/fixtures/\\([^/]+\\)_fixture\.php$"
   "Fixture file regExp.")
 
-(defvar cake-javascript-regexp "^\\(.+/app/\\)webroot/js/.+\.js$"
+(defvar cake-javascript-regexp "^.+/app/webroot/js/.+\.js$"
   "JavaScript file regExp.")
 
-(defvar cake-css-regexp "^\\(.+/app/\\)webroot/css/.+\.css$"
+(defvar cake-css-regexp "^.+/app/webroot/css/.+\.css$"
   "Css file regExp.")
 
 (defvar cake-current-file-type nil
@@ -345,42 +345,42 @@
 (defun cake-set-default-keymap ()
   "Set default key-map"
   (setq cake-key-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "\C-cs" 'cake-switch)
-    (define-key map "\C-ct" 'cake-switch-testcase)
-    (define-key map "\C-cm" 'cake-switch-to-model)
-    (define-key map "\C-cv" 'cake-switch-to-view)
-    (define-key map "\C-cc" 'cake-switch-to-controller)
-    (define-key map "\C-cx" 'cake-switch-to-fixture)
-    (define-key map "\C-cf" 'cake-switch-to-function)
-    (define-key map "\C-ce" 'cake-switch-to-element)
-    (define-key map "\C-cj" 'cake-switch-to-javascript)
-    (define-key map "\C-cb" 'cake-switch-to-file-history)
-    (define-key map "\C-cM" 'cake-open-models-dir)
-    (define-key map "\C-cV" 'cake-open-views-dir)
-    (define-key map "\C-cC" 'cake-open-controllers-dir)
-    (define-key map "\C-cB" 'cake-open-behaviors-dir)
-    (define-key map "\C-cH" 'cake-open-helpers-dir)
-    (define-key map "\C-cP" 'cake-open-components-dir)
-    (define-key map "\C-cL" 'cake-open-layouts-dir)
-    (define-key map "\C-cE" 'cake-open-elements-dir)
-    (define-key map "\C-cJ" 'cake-open-js-dir)
-    (define-key map "\C-cS" 'cake-open-css-dir)
-    (define-key map "\C-cT" 'cake-open-tests-dir)
-    (define-key map "\C-c\C-g" 'cake-open-config-dir)
-    (define-key map "\C-c\C-l" 'cake-tail-log)
-    ;; anything-functions
-    (define-key map "\C-cl" 'anything-c-cake-anything-only-source-cake)
-    (define-key map "\C-co" 'anything-c-cake-anything-only-function)
-    (define-key map "\C-cp" 'anything-c-cake-anything-only-po)
-    map)))
+        (let ((map (make-sparse-keymap)))
+          (define-key map "\C-cs" 'cake-switch)
+          (define-key map "\C-ct" 'cake-switch-testcase)
+          (define-key map "\C-cm" 'cake-switch-to-model)
+          (define-key map "\C-cv" 'cake-switch-to-view)
+          (define-key map "\C-cc" 'cake-switch-to-controller)
+          (define-key map "\C-cx" 'cake-switch-to-fixture)
+          (define-key map "\C-cf" 'cake-switch-to-function)
+          (define-key map "\C-ce" 'cake-switch-to-element)
+          (define-key map "\C-cj" 'cake-switch-to-javascript)
+          (define-key map "\C-cb" 'cake-switch-to-file-history)
+          (define-key map "\C-cM" 'cake-open-models-dir)
+          (define-key map "\C-cV" 'cake-open-views-dir)
+          (define-key map "\C-cC" 'cake-open-controllers-dir)
+          (define-key map "\C-cB" 'cake-open-behaviors-dir)
+          (define-key map "\C-cH" 'cake-open-helpers-dir)
+          (define-key map "\C-cP" 'cake-open-components-dir)
+          (define-key map "\C-cL" 'cake-open-layouts-dir)
+          (define-key map "\C-cE" 'cake-open-elements-dir)
+          (define-key map "\C-cJ" 'cake-open-js-dir)
+          (define-key map "\C-cS" 'cake-open-css-dir)
+          (define-key map "\C-cT" 'cake-open-tests-dir)
+          (define-key map "\C-c\C-g" 'cake-open-config-dir)
+          (define-key map "\C-c\C-l" 'cake-tail-log)
+          ;; anything-functions
+          (define-key map "\C-cl" 'anything-c-cake-anything-only-source-cake)
+          (define-key map "\C-co" 'anything-c-cake-anything-only-function)
+          (define-key map "\C-cp" 'anything-c-cake-anything-only-po)
+          map)))
 
 (defun cake-is-model-file ()
   "Check whether current file is model file."
   (cake-set-app-path)
   (if (not (string-match cake-model-regexp (buffer-file-name)))
       nil
-    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (setq cake-singular-name (match-string 1 (buffer-file-name)))
     (cake-convert-singular-to-plural cake-plural-rules)
     (setq cake-current-file-type 'model)))
 
@@ -389,9 +389,9 @@
   (cake-set-app-path)
   (if (not (string-match cake-view-regexp (buffer-file-name)))
       nil
-    (setq cake-plural-name (match-string 2 (buffer-file-name)))
-    (setq cake-action-name (match-string 4 (buffer-file-name)))
-    (setq cake-view-extension (match-string 5 (buffer-file-name)))
+    (setq cake-plural-name (match-string 1 (buffer-file-name)))
+    (setq cake-action-name (match-string 3 (buffer-file-name)))
+    (setq cake-view-extension (match-string 4 (buffer-file-name)))
     (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
     (cake-convert-plural-to-singular cake-singular-rules)
     (setq cake-current-file-type 'view)))
@@ -401,7 +401,7 @@
   (cake-set-app-path)
   (if (not (string-match cake-controller-regexp (buffer-file-name)))
       nil
-    (setq cake-plural-name (match-string 2 (buffer-file-name)))
+    (setq cake-plural-name (match-string 1 (buffer-file-name)))
     (save-excursion
       (if
           (not (re-search-backward "function[ \t]*\\([a-zA-Z0-9_]+\\)[ \t]*\(" nil t))
@@ -438,7 +438,7 @@
   (cake-set-app-path)
   (if (not (string-match cake-model-testcase-regexp (buffer-file-name)))
       nil
-    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (setq cake-singular-name (match-string 1 (buffer-file-name)))
     (cake-convert-singular-to-plural cake-plural-rules)
     (setq cake-current-file-type 'model-testcase)))
 
@@ -447,7 +447,7 @@
   (cake-set-app-path)
   (if (not (string-match cake-controller-testcase-regexp (buffer-file-name)))
       nil
-    (setq cake-plural-name (match-string 2 (buffer-file-name)))
+    (setq cake-plural-name (match-string 1 (buffer-file-name)))
     (cake-convert-plural-to-singular cake-singular-rules)
     (setq cake-current-file-type 'controller-testcase)))
 
@@ -456,7 +456,7 @@
   (cake-set-app-path)
   (if (not (string-match cake-fixture-regexp (buffer-file-name)))
       nil
-    (setq cake-singular-name (match-string 2 (buffer-file-name)))
+    (setq cake-singular-name (match-string 1 (buffer-file-name)))
     (cake-convert-singular-to-plural cake-plural-rules)
     (setq cake-current-file-type 'fixture)))
 
@@ -520,20 +520,22 @@
 
 (defun cake-set-regexp ()
   "Set regExp."
-  (setq cake-model-regexp (concat cake-app-path "/\\)models/\\([^/]+\\)\.php"))
-  (setq cake-view-regexp (concat cake-app-path "/\\)views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
-  (setq cake-controller-regexp (concat cake-app-path "/\\)controllers/\\([^/]+\\)_controller\.php$"))
-  (setq cake-behavior-regexp (concat cake-app-path "/\\)models/behaviors/\\([^/]+\\)\.php$"))
-  (setq cake-helper-regexp (concat cake-app-path "/\\)views/helpers/\\([^/]+\\)\.php$"))
-  (setq cake-component-regexp (concat cake-app-path "/\\)controllers/components/\\([^/]+\\)\.php$"))
-  (setq cake-model-testcase-regexp (concat cake-app-path "/\\)tests/cases/models/\\([^/]+\\)\.test\.php$"))
-  (setq cake-controller-testcase-regexp (concat cake-app-path "/\\)tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
-  (setq cake-fixture-regexp (concat cake-app-path "/\\)tests/fixtures/\\([^/]+\\)_fixture\.php$"))
-  (setq cake-javascript-regexp (concat cake-app-path "/\\)webroot/js/.+\.js$"))
-  (setq cake-css-regexp (concat cake-app-path "/\\)webroot/css/.+\.css$")))
+  (setq cake-model-regexp (concat cake-app-path "models/\\([^/]+\\)\.php"))
+  (setq cake-view-regexp (concat cake-app-path "views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
+  (setq cake-controller-regexp (concat cake-app-path "controllers/\\([^/]+\\)_controller\.php$"))
+  (setq cake-behavior-regexp (concat cake-app-path "models/behaviors/\\([^/]+\\)\.php$"))
+  (setq cake-helper-regexp (concat cake-app-path "views/helpers/\\([^/]+\\)\.php$"))
+  (setq cake-component-regexp (concat cake-app-path "controllers/components/\\([^/]+\\)\.php$"))
+  (setq cake-model-testcase-regexp (concat cake-app-path "tests/cases/models/\\([^/]+\\)\.test\.php$"))
+  (setq cake-controller-testcase-regexp (concat cake-app-path "tests/cases/controllers/\\([^/]+\\)_controller\.test\.php$"))
+  (setq cake-fixture-regexp (concat cake-app-path "tests/fixtures/\\([^/]+\\)_fixture\.php$"))
+  (setq cake-javascript-regexp (concat cake-app-path "webroot/js/.+\.js$"))
+  (setq cake-css-regexp (concat cake-app-path "webroot/css/.+\.css$"))
+  t)
 
 (defun cake-convert-singular-to-plural (list)
   "Convert singular name To plural name."
+  (setq cake-plural-name nil)
   (if list
       (progn
         (if (string-match (nth 0 (car list)) cake-singular-name)
@@ -541,10 +543,13 @@
               (setq cake-plural-name (replace-match (nth 1 (car list)) nil nil cake-singular-name))
               (setq list nil)))
         (cake-convert-singular-to-plural
-         (cdr list)))))
+         (cdr list))))
+  (unless cake-plural-name
+    (setq cake-plural-name cake-singular-name)))
 
 (defun cake-convert-plural-to-singular (list)
   "Convert plural name To singular name."
+  (setq cake-singular-name nil)
   (if list
       (progn
         (if (string-match (nth 0 (car list)) cake-plural-name)
@@ -552,7 +557,9 @@
               (setq cake-singular-name (replace-match (nth 1 (car list)) nil nil cake-plural-name))
               (setq list nil)))
         (cake-convert-plural-to-singular
-         (cdr list)))))
+         (cdr list))))
+  (unless cake-singular-name
+    (setq cake-singular-name cake-plural-name)))
 
 (defun cake-switch-to-model ()
   "Switch to model."
@@ -1179,25 +1186,25 @@
 (defun anything-c-cake-switch-to-controller ()
   "Switch to contoroller."
   (cake-set-app-path)
-    (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+  (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+      (progn
+        (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+        (goto-char (point-min))
+        (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
+            (progn
+              (goto-char (point-min))
+              (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
+    (if (file-exists-p (concat cake-app-path cake-plural-name "_controller.php"))
         (progn
-          (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+          (find-file (concat cake-app-path cake-plural-name "_controller.php"))
           (goto-char (point-min))
           (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
               (progn
                 (goto-char (point-min))
                 (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
-      (if (file-exists-p (concat cake-app-path cake-plural-name "_controller.php"))
-          (progn
-            (find-file (concat cake-app-path cake-plural-name "_controller.php"))
-            (goto-char (point-min))
-            (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
-                (progn
-                  (goto-char (point-min))
-                  (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
-        (if (y-or-n-p "Make new file?")
-            (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
-          (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
+      (if (y-or-n-p "Make new file?")
+          (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+        (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
 
 (defun anything-c-cake-switch-to-model ()
   "Switch to model."
@@ -1370,7 +1377,7 @@
      ("Insert msgid." . (lambda (candidate)
                           (insert (anything-c-cake-get-msgid candidate))))
      ("Insert msgstr." . (lambda (candidate)
-                          (insert (anything-c-cake-get-msgstr candidate))))
+                           (insert (anything-c-cake-get-msgstr candidate))))
      ("Goto po file" . (lambda (candidate)
                          (find-file (concat path "locale/" cake-po-file-path))
                          (goto-char (point-min))
