@@ -105,7 +105,7 @@
 ;;  `cake-open-css-dir'
 ;;    Open css directory.
 ;;  `cake-open-tests-dir'
-;;    Open css directory.
+;;    Open tests directory.
 ;;  `cake-set-version'
 ;;    Set CakePHP version.
 ;;  `cake-complete'
@@ -912,7 +912,7 @@
   (cake-open-dir "webroot/css/" t))
 
 (defun cake-open-tests-dir ()
-  "Open css directory."
+  "Open tests directory."
   (interactive)
   (cake-open-dir "tests/" t))
 
