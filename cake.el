@@ -1135,7 +1135,7 @@
                         "*_controller.php --with-filename")
                 nil (current-buffer))
                (goto-char (point-min))
-               (while (re-search-forward ".+\\/\\([^\\/]+\\)_controller\.php:.*function *\\([^ ]+\\) *(.*).*" nil t)
+               (while (re-search-forward ".+\\/\\([^\\/]+\\)_controller\.php:.*function *\\([^ ]+\\) *(.*).*$" nil t)
                  (replace-match (concat (match-string 1) " / " (match-string 2))))
                )
            (with-current-buffer (anything-candidate-buffer 'local)
