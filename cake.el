@@ -35,7 +35,7 @@
 ;;
 ;; If you use default key map, Put the following expression into your ~/.emacs.
 ;;
-;; (cake-set-default-key-map)
+;; (cake-set-default-keymap)
 
 ;;; YASnippet
 ;; If you use yasnippet, Put snippets/ into YASnippet load-directory.
