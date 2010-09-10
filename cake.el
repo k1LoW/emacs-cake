@@ -801,40 +801,24 @@
   "Open directory."
   (interactive)
   (if (cake-set-app-path)
-      (anything
-       (cake-get-open-dir-anything-sources dir recursive)
-       nil nil nil nil)
+      (if (file-directory-p (concat cake-app-path dir))
+          (anything
+           '((name . "Open directory")
+             (init . (lambda ()
+                       (setq path cake-app-path)
+                       (if recursive
+                           (setq files (cake-get-recuresive-file-list dir))
+                         (setq files (directory-files (concat path dir))))))
+             (candidates . files)
+             (display-to-real . (lambda (candidate)
+                                  (concat path dir candidate)))
+             (header-name . (lambda (name)
+                              (format "%s: %s" name dir)))
+             (type . file)
+             )
+           nil nil nil nil)
+        (message (concat "Can't open " cake-app-path dir)))
     (message "Can't set app path.")))
-
-(defun cake-get-open-dir-anything-sources (dir-list &optional recursive)
-  "Get open dir anything sources"
-  (let ((files nil)
-        (path nil)
-        (source nil))
-    (unless (listp dir-list)
-      (setq dir-list (list dir-list)))
-    (if (cake-set-app-path)
-        (if (file-directory-p (concat cake-app-path dir))
-            (push
-             '((name . "Open directory")
-               (init . (lambda ()
-                         (setq path cake-app-path)
-                         (if recursive
-                             (setq files (cake-get-recuresive-file-list dir))
-                           (setq files (directory-files (concat path dir))))))
-               (candidates . files)
-               (display-to-real . (lambda (candidate)
-                                    (concat path dir candidate)))
-               (header-name . (lambda (name)
-                                (format "%s: %s" name dir)))
-               (type . file)
-               )
-             source)
-          ;;(message (concat "Can't open " cake-app-path dir))
-          "")
-      source)
-    (message "Can't set app path.")
-    ""))
 
 (defun cake-get-recuresive-file-list (dir)
   "Get file list recuresively."
@@ -872,7 +856,7 @@
   "Open views directory."
   (interactive)
   (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
-      (cake-open-dir (list "views/" (concat "views/" cake-plural-name "/")))
+      (cake-open-dir (concat "views/" cake-plural-name "/"))
     (cake-open-dir "views/" t)))
 
 (defun cake-open-controllers-dir ()
