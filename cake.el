@@ -35,7 +35,7 @@
 ;;
 ;; If you use default key map, Put the following expression into your ~/.emacs.
 ;;
-;; (cake-set-default-keymap)
+;; (cake-set-default-key-map)
 
 ;;; YASnippet
 ;; If you use yasnippet, Put snippets/ into YASnippet load-directory.
@@ -139,6 +139,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Bug fix (MVC switch)
 ;; 1.3.0: Merge anything-c-cake.el.
 ;;        Remove key map. New function cake-set-default-key-map.
 ;; 1.2.6: Support CakePHP 1.3.
@@ -535,7 +536,6 @@
 
 (defun cake-convert-singular-to-plural (list)
   "Convert singular name To plural name."
-  (setq cake-plural-name nil)
   (if list
       (progn
         (if (string-match (nth 0 (car list)) cake-singular-name)
@@ -543,13 +543,10 @@
               (setq cake-plural-name (replace-match (nth 1 (car list)) nil nil cake-singular-name))
               (setq list nil)))
         (cake-convert-singular-to-plural
-         (cdr list))))
-  (unless cake-plural-name
-    (setq cake-plural-name cake-singular-name)))
+         (cdr list)))))
 
 (defun cake-convert-plural-to-singular (list)
   "Convert plural name To singular name."
-  (setq cake-singular-name nil)
   (if list
       (progn
         (if (string-match (nth 0 (car list)) cake-plural-name)
@@ -557,9 +554,7 @@
               (setq cake-singular-name (replace-match (nth 1 (car list)) nil nil cake-plural-name))
               (setq list nil)))
         (cake-convert-plural-to-singular
-         (cdr list))))
-  (unless cake-singular-name
-    (setq cake-singular-name cake-plural-name)))
+         (cdr list)))))
 
 (defun cake-switch-to-model ()
   "Switch to model."
@@ -805,27 +800,41 @@
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
   (interactive)
+  (if (cake-set-app-path)
+      (anything
+       (cake-get-open-dir-anything-sources dir recursive)
+       nil nil nil nil)
+    (message "Can't set app path.")))
+
+(defun cake-get-open-dir-anything-sources (dir-list &optional recursive)
+  "Get open dir anything sources"
   (let ((files nil)
-        (path nil))
+        (path nil)
+        (source nil))
+    (unless (listp dir-list)
+      (setq dir-list (list dir-list)))
     (if (cake-set-app-path)
         (if (file-directory-p (concat cake-app-path dir))
-            (anything
-             '(((name . "Open directory")
-                (init . (lambda ()
-                          (setq path cake-app-path)
-                          (if recursive
-                              (setq files (cake-get-recuresive-file-list dir))
-                            (setq files (directory-files (concat path dir))))))
-                (candidates . files)
-                (display-to-real . (lambda (candidate)
-                                     (concat path dir candidate)
-                                     ))
-                (header-name . (lambda (name)
-                                 (format "%s: %s" name dir)))
-                (type . file)))
-             nil nil nil nil)
-          (message (concat "Can't open " cake-app-path dir)))
-      (message "Can't set app path."))))
+            (push
+             '((name . "Open directory")
+               (init . (lambda ()
+                         (setq path cake-app-path)
+                         (if recursive
+                             (setq files (cake-get-recuresive-file-list dir))
+                           (setq files (directory-files (concat path dir))))))
+               (candidates . files)
+               (display-to-real . (lambda (candidate)
+                                    (concat path dir candidate)))
+               (header-name . (lambda (name)
+                                (format "%s: %s" name dir)))
+               (type . file)
+               )
+             source)
+          ;;(message (concat "Can't open " cake-app-path dir))
+          "")
+      source)
+    (message "Can't set app path.")
+    ""))
 
 (defun cake-get-recuresive-file-list (dir)
   "Get file list recuresively."
@@ -863,7 +872,7 @@
   "Open views directory."
   (interactive)
   (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
-      (cake-open-dir (concat "views/" cake-plural-name "/"))
+      (cake-open-dir (list "views/" (concat "views/" cake-plural-name "/")))
     (cake-open-dir "views/" t)))
 
 (defun cake-open-controllers-dir ()
