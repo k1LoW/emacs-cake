@@ -800,6 +800,7 @@
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
   (interactive)
+  (let (path files)
   (if (cake-set-app-path)
       (if (file-directory-p (concat cake-app-path dir))
           (anything
@@ -807,7 +808,7 @@
              (init . (lambda ()
                        (setq path cake-app-path)
                        (if recursive
-                           (setq files (cake-get-recuresive-file-list dir))
+                           (setq files (cake-directory-files dir))
                          (setq files (directory-files (concat path dir))))))
              (candidates . files)
              (display-to-real . (lambda (candidate)
@@ -818,17 +819,19 @@
              )
            nil nil nil nil)
         (message (concat "Can't open " cake-app-path dir)))
-    (message "Can't set app path.")))
+    (message "Can't set app path."))))
 
-(defun cake-get-recuresive-file-list (dir)
-  "Get file list recuresively."
+(defun cake-directory-files (dir &optional recursive)
+  "Get directory files recuresively."
   (let
       ((file-list nil))
+    (if (not recursive)
+        (directory-files (concat cake-app-path dir))
     (loop for x in (cake-get-recuresive-path-list (concat cake-app-path dir))
           do (progn
                (string-match (concat cake-app-path dir "\\(.+\\)") x)
                (push (match-string 1 x) file-list)))
-    file-list))
+    file-list)))
 
 (defun cake-get-recuresive-path-list (file-list)
   "Get file path list recuresively."
@@ -952,7 +955,7 @@
                                           (concat "$javascript->link('" c "');"))))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "webroot/js/" x))))
-                                       (cake-get-recuresive-file-list "webroot/js/")))))
+                                       (cake-directory-files "webroot/js/" t)))))
     (action
      ("Insert Code" . (lambda (candidate)
                         (delete-backward-char (length cake-initial-input))
@@ -969,7 +972,7 @@
                                           (concat "$html->css('" c "');"))))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "webroot/css/" x))))
-                                       (cake-get-recuresive-file-list "webroot/css/")))))
+                                       (cake-directory-files "webroot/css/" t)))))
     (action
      ("Insert Code" . (lambda (candidate)
                         (delete-backward-char (length cake-initial-input))
@@ -981,7 +984,7 @@
                     (mapcar (function (lambda (c) (concat "$this->layout = '" c "';")))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "views/layouts/" x))))
-                                       (cake-get-recuresive-file-list "views/layouts/")))))
+                                       (cake-directory-files "views/layouts/" t)))))
     (action
      ("Insert Code" . (lambda (candidate)
                         (delete-backward-char (length cake-initial-input))
@@ -996,7 +999,7 @@
                                         (concat "$this->element('" c "');")))
                             (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
                                                        (file-directory-p (concat cake-app-path "views/elements/" x))))
-                                       (cake-get-recuresive-file-list "views/elements/")))))
+                                       (cake-directory-files "views/elements/" t)))))
     (action
      ("Insert Code" . (lambda (candidate)
                         (delete-backward-char (length cake-initial-input))
