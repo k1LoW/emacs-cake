@@ -801,25 +801,23 @@
   "Open directory."
   (interactive)
   (let (path files)
-  (if (cake-set-app-path)
-      (if (file-directory-p (concat cake-app-path dir))
-          (anything
-           '((name . "Open directory")
-             (init . (lambda ()
-                       (setq path cake-app-path)
-                       (if recursive
-                           (setq files (cake-directory-files dir))
-                         (setq files (directory-files (concat path dir))))))
-             (candidates . files)
-             (display-to-real . (lambda (candidate)
-                                  (concat path dir candidate)))
-             (header-name . (lambda (name)
-                              (format "%s: %s" name dir)))
-             (type . file)
-             )
-           nil nil nil nil)
-        (message (concat "Can't open " cake-app-path dir)))
-    (message "Can't set app path."))))
+    (if (cake-set-app-path)
+        (if (file-directory-p (concat cake-app-path dir))
+            (anything
+             '((name . "Open directory")
+               (init . (lambda ()
+                         (setq path cake-app-path)
+                         (setq files (cake-directory-files dir recursive))))
+               (candidates . files)
+               (display-to-real . (lambda (candidate)
+                                    (concat path dir candidate)))
+               (header-name . (lambda (name)
+                                (format "%s: %s" name dir)))
+               (type . file)
+               )
+             nil nil nil nil)
+          (message (concat "Can't open " cake-app-path dir)))
+      (message "Can't set app path."))))
 
 (defun cake-directory-files (dir &optional recursive)
   "Get directory files recuresively."
@@ -827,11 +825,11 @@
       ((file-list nil))
     (if (not recursive)
         (directory-files (concat cake-app-path dir))
-    (loop for x in (cake-get-recuresive-path-list (concat cake-app-path dir))
-          do (progn
-               (string-match (concat cake-app-path dir "\\(.+\\)") x)
-               (push (match-string 1 x) file-list)))
-    file-list)))
+      (loop for x in (cake-get-recuresive-path-list (concat cake-app-path dir))
+            do (progn
+                 (string-match (concat cake-app-path dir "\\(.+\\)") x)
+                 (push (match-string 1 x) file-list)))
+      file-list)))
 
 (defun cake-get-recuresive-path-list (file-list)
   "Get file path list recuresively."
