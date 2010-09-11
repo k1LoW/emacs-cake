@@ -112,6 +112,10 @@
 ;;    Insert CakePHP code.
 ;;  `cake-tail-log'
 ;;    Show log by "tail".
+;;  `cake-singularize'
+;;    Singularize str
+;;  `cake-pluralize'
+;;    Pluralize str
 ;;  `anything-c-cake-anything-only-source-cake'
 ;;    anything only anything-c-source-cake and anything-c-source-cake-model-function.
 ;;  `anything-c-cake-anything-only-function'
@@ -139,10 +143,12 @@
 ;;    default = "1.3"
 
 ;;; Change Log
-;; -.-.-: Refactor code
-;; -.-.-: Bug fix (MVC switch)
+;; -.-.-: New function cake-singularize, cake-pluralize
+;;      : Remove function cake-convert-singular-to-plural, cake-convert-plural-to-singular
+;;      : Refactor code
+;;      : Bug fix (MVC switch)
 ;; 1.3.0: Merge anything-c-cake.el.
-;;        Remove key map. New function cake-set-default-key-map.
+;;        Remove key map. New function cake-set-default-keymap.
 ;; 1.2.6: Support CakePHP 1.3.
 ;;        Refactor code.
 ;;        Modify function cake-switch-to-javascript.
@@ -383,7 +389,7 @@
   (if (not (string-match cake-model-regexp (buffer-file-name)))
       nil
     (setq cake-singular-name (match-string 1 (buffer-file-name)))
-    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-plural-name (cake-pluralize cake-singular-name))
     (setq cake-current-file-type 'model)))
 
 (defun cake-is-view-file ()
@@ -395,7 +401,7 @@
     (setq cake-action-name (match-string 3 (buffer-file-name)))
     (setq cake-view-extension (match-string 4 (buffer-file-name)))
     (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
-    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-singular-name (cake-singularize cake-plural-name))
     (setq cake-current-file-type 'view)))
 
 (defun cake-is-controller-file ()
@@ -411,7 +417,7 @@
     (setq cake-action-name (match-string 1))
     (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
     (setq cake-snake-action-name (cake-snake cake-action-name))
-    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-singular-name (cake-singularize cake-plural-name))
     (setq cake-current-file-type 'controller)))
 
 (defun cake-is-behavior-file ()
@@ -441,7 +447,7 @@
   (if (not (string-match cake-model-testcase-regexp (buffer-file-name)))
       nil
     (setq cake-singular-name (match-string 1 (buffer-file-name)))
-    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-plural-name (cake-pluralize cake-singular-name))
     (setq cake-current-file-type 'model-testcase)))
 
 (defun cake-is-controller-testcase-file ()
@@ -450,7 +456,7 @@
   (if (not (string-match cake-controller-testcase-regexp (buffer-file-name)))
       nil
     (setq cake-plural-name (match-string 1 (buffer-file-name)))
-    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-singular-name (cake-singularize cake-plural-name))
     (setq cake-current-file-type 'controller-testcase)))
 
 (defun cake-is-fixture-file ()
@@ -459,7 +465,7 @@
   (if (not (string-match cake-fixture-regexp (buffer-file-name)))
       nil
     (setq cake-singular-name (match-string 1 (buffer-file-name)))
-    (cake-convert-singular-to-plural cake-plural-rules)
+    (setq cake-plural-name (cake-pluralize cake-singular-name))
     (setq cake-current-file-type 'fixture)))
 
 (defun cake-is-javascript-file ()
@@ -535,28 +541,6 @@
   (setq cake-css-regexp (concat cake-app-path "webroot/css/.+\.css$"))
   t)
 
-(defun cake-convert-singular-to-plural (list)
-  "Convert singular name To plural name."
-  (if list
-      (progn
-        (if (string-match (nth 0 (car list)) cake-singular-name)
-            (progn
-              (setq cake-plural-name (replace-match (nth 1 (car list)) nil nil cake-singular-name))
-              (setq list nil)))
-        (cake-convert-singular-to-plural
-         (cdr list)))))
-
-(defun cake-convert-plural-to-singular (list)
-  "Convert plural name To singular name."
-  (if list
-      (progn
-        (if (string-match (nth 0 (car list)) cake-plural-name)
-            (progn
-              (setq cake-singular-name (replace-match (nth 1 (car list)) nil nil cake-plural-name))
-              (setq list nil)))
-        (cake-convert-plural-to-singular
-         (cdr list)))))
-
 (defun cake-switch-to-model ()
   "Switch to model."
   (interactive)
@@ -570,7 +554,8 @@
   (let ((view-files nil))
     (if (cake-is-file)
         (progn
-          (if (cake-is-model-file) (cake-convert-singular-to-plural cake-plural-rules))
+          (if (cake-is-model-file)
+              (setq cake-plural-name (cake-pluralize cake-singular-name)))
           (setq view-files (cake-set-view-list))
           (if view-files
               (cond
@@ -1066,6 +1051,26 @@
             (switch-to-buffer logbuffer))
         (message "Can't set log.")))))
 
+(defun cake-singularize (str)
+  "Singularize str"
+  (interactive)
+  (let ((result str))
+    (loop for rule in cake-singular-rules do
+          (unless (not (string-match (nth 0 rule) str))
+            (setq result (replace-match (nth 1 rule) nil nil str))
+            (return result)))))
+;;(cake-singularize "cases")
+
+(defun cake-pluralize (str)
+  "Pluralize str"
+  (interactive)
+  (let ((result str))
+    (loop for rule in cake-plural-rules do
+          (unless (not (string-match (nth 0 rule) str))
+            (setq result (replace-match (nth 1 rule) nil nil str))
+            (return result)))))
+;;(cake-pluralize "case")
+
 (defun cake-camelize (str)
   "Change snake_case to Camelize."
   (let ((camelize-str str) (case-fold-search nil))
@@ -1152,7 +1157,7 @@
     (string-match "\\(.+\\) / \\(.+\\)" candidate)
     (setq cake-plural-name (match-string 1 candidate))
     (setq cake-action-name (match-string 2 candidate))
-    (cake-convert-plural-to-singular cake-singular-rules)
+    (setq cake-singular-name (cake-singularize cake-plural-name))
     (setq cake-lower-camelized-action-name cake-action-name)
     (setq cake-snake-action-name (cake-snake cake-action-name))))
 
