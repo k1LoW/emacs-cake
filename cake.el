@@ -139,6 +139,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Refactor code
 ;; -.-.-: Bug fix (MVC switch)
 ;; 1.3.0: Merge anything-c-cake.el.
 ;;        Remove key map. New function cake-set-default-key-map.
