@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.0
+;; Version: 1.3.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -143,10 +143,11 @@
 ;;    default = "1.3"
 
 ;;; Change Log
-;; -.-.-: New function cake-singularize, cake-pluralize
-;;      : Remove function cake-convert-singular-to-plural, cake-convert-plural-to-singular
-;;      : Refactor code
-;;      : Bug fix (MVC switch)
+;; 1.3.1: Fix doc.
+;;        New function cake-singularize, cake-pluralize.
+;;        Remove function cake-convert-singular-to-plural, cake-convert-plural-to-singular.
+;;        Refactor code.
+;;        Fix bug (MVC switch)
 ;; 1.3.0: Merge anything-c-cake.el.
 ;;        Remove key map. New function cake-set-default-keymap.
 ;; 1.2.6: Support CakePHP 1.3.
@@ -163,7 +164,7 @@
 ;; 1.2.3: Update ac-cake.el.
 ;; 1.2.2: Update anything-c-cake.el.
 ;; 1.2.1: New valiables cake-hook.
-;;        Bug fix (cake-snake).
+;;        Fix bug (cake-snake).
 ;;        Refactor code.
 ;; 1.2.0: cake-switch-to-element bug fix.
 ;;        New function cake-camelize. Refactor code.
@@ -173,13 +174,13 @@
 ;; 1.1.6: New valiables cake-app-path-search-limit. Refactor cake-is-app-path. Fix Doc
 ;; 1.1.5: Modifiy cake-source-javascript, cake-source-css, cake-source-elements
 ;; 1.1.4: New valiables cake-use-imenu.
-;; 1.1.3: Bug fix.
+;; 1.1.3: Fix bug.
 ;; 1.1.2: Modify cake-complete.
-;; 1.1.1: Bug fix.
+;; 1.1.1: Fix bug.
 ;; 1.1.0: Use anything-show-completion.el if available.
 ;; 1.0.9: New function cake-complete.
 ;; 1.0.8: Modifiy cake-switch-to-function.
-;; 1.0.7: Bug fix.
+;; 1.0.7: Fix bug.
 ;; 1.0.6: New valiables cake-po-file-path. Fix doc.
 ;; 1.0.5: Set header-name to cake-open-*-dir. advice from id:rubikitch.
 ;; 1.0.4: cake-is-app-path bug fix.
@@ -1072,7 +1073,7 @@
 ;;(cake-pluralize "case")
 
 (defun cake-camelize (str)
-  "Change snake_case to Camelize."
+  "Camelize snake_case str"
   (let ((camelize-str str) (case-fold-search nil))
     (setq camelize-str (capitalize (downcase camelize-str)))
     (replace-regexp-in-string
@@ -1081,7 +1082,7 @@
 ;;(cake-camelize "cake_camelize")
 
 (defun cake-lower-camelize (str)
-  "Change snake_case to lowerCamelize."
+  "lowerCamelize snake_case str"
   (let ((head-str "") (tail-str "") (case-fold-search nil))
     (if (string-match "^\\([a-z]+_\\)\\([a-z0-9_]*\\)" (downcase str))
         (progn
