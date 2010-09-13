@@ -789,660 +789,672 @@
   (interactive)
   (let (path files)
     (if (cake-set-app-path)
-        (if (file-directory-p (concat cake-app-path dir))
-            (anything
-             '((name . "Open directory")
-               (init . (lambda ()
-                         (setq path cake-app-path)
-                         (setq files (cake-directory-files dir recursive))))
-               (candidates . files)
-               (display-to-real . (lambda (candidate)
-                                    (concat path dir candidate)))
-               (header-name . (lambda (name)
-                                (format "%s: %s" name dir)))
-               (type . file)
-               )
-             nil nil nil nil)
-          (message (concat "Can't open " cake-app-path dir)))
+        (anything
+         (cake-create-open-dir-anything-sources dir)
+         nil nil nil nil)
       (message "Can't set app path."))))
 
+(defun cake-create-open-dir-anything-sources (dir)
+  "Careate 'Open dir' anything-sources"
+  (let (sources)
+    (unless (listp dir)
+      (setq dir (list dir)))
+    (if (cake-set-app-path)
+        (progn
+          (loop for d in dir do
+                (unless (not (file-directory-p (concat cake-app-path d)))
+                  (push
+                   `((name . "Open directory")
+                     (candidates . ,(cake-directory-files d recursive))
+                     (display-to-real . (lambda (candidate)
+                                          (concat ,cake-app-path ,d candidate)))
+                     (header-name . (lambda (name)
+                                      (format "%s: %s" name ,d)))
+                     (type . file)
+                     (volatile))
+                   sources)
+                  ))
+          sources)
+      (message "Can't set app path.")
+      )))
+
 (defun cake-directory-files (dir &optional recursive)
-  "Get directory files recuresively."
-  (let
-      ((file-list nil))
-    (if (not recursive)
-        (directory-files (concat cake-app-path dir))
-      (loop for x in (cake-get-recuresive-path-list (concat cake-app-path dir))
-            do (progn
-                 (string-match (concat cake-app-path dir "\\(.+\\)") x)
-                 (push (match-string 1 x) file-list)))
-      file-list)))
+"Get directory files recuresively."
+(let
+    ((file-list nil))
+  (if (not recursive)
+      (directory-files (concat cake-app-path dir))
+    (loop for x in (cake-get-recuresive-path-list (concat cake-app-path dir))
+          do (progn
+               (string-match (concat cake-app-path dir "\\(.+\\)") x)
+               (push (match-string 1 x) file-list)))
+    file-list)))
 
 (defun cake-get-recuresive-path-list (file-list)
-  "Get file path list recuresively."
-  (let ((path-list nil))
-    (unless (listp file-list)
-      (setq file-list (list file-list)))
-    (loop for x
-          in file-list
-          do (if (file-directory-p x)
-                 (setq path-list
-                       (append
-                        (cake-get-recuresive-path-list
-                         (remove-if
-                          (lambda(y) (string-match "\\.$\\|\\.svn" y)) (directory-files x t)))
-                        path-list))
-               (setq path-list (push x path-list))))
-    path-list))
+"Get file path list recuresively."
+(let ((path-list nil))
+  (unless (listp file-list)
+    (setq file-list (list file-list)))
+  (loop for x
+        in file-list
+        do (if (file-directory-p x)
+               (setq path-list
+                     (append
+                      (cake-get-recuresive-path-list
+                       (remove-if
+                        (lambda(y) (string-match "\\.$\\|\\.svn" y)) (directory-files x t)))
+                      path-list))
+             (setq path-list (push x path-list))))
+  path-list))
 
 (defun cake-open-models-dir ()
-  "Open models directory."
-  (interactive)
-  (cake-open-dir "models/"))
+"Open models directory."
+(interactive)
+(cake-open-dir "models/"))
 
 (defun cake-open-views-dir ()
-  "Open views directory."
-  (interactive)
-  (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
-      (cake-open-dir (concat "views/" cake-plural-name "/"))
-    (cake-open-dir "views/" t)))
+"Open views directory."
+(interactive)
+(if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
+    (cake-open-dir (concat "views/" cake-plural-name "/"))
+  (cake-open-dir "views/" t)))
 
 (defun cake-open-controllers-dir ()
-  "Open contorollers directory."
-  (interactive)
-  (cake-open-dir "controllers/"))
+"Open contorollers directory."
+(interactive)
+(cake-open-dir "controllers/"))
 
 (defun cake-open-behaviors-dir ()
-  "Open behaviors directory."
-  (interactive)
-  (cake-open-dir "models/behaviors/"))
+"Open behaviors directory."
+(interactive)
+(cake-open-dir "models/behaviors/"))
 
 (defun cake-open-helpers-dir ()
-  "Open helpers directory."
-  (interactive)
-  (cake-open-dir "views/helpers/"))
+"Open helpers directory."
+(interactive)
+(cake-open-dir "views/helpers/"))
 
 (defun cake-open-components-dir ()
-  "Open components directory."
-  (interactive)
-  (cake-open-dir "controllers/components/"))
+"Open components directory."
+(interactive)
+(cake-open-dir "controllers/components/"))
 
 (defun cake-open-config-dir ()
-  "Open config dir."
-  (interactive)
-  (cake-open-dir "config/"))
+"Open config dir."
+(interactive)
+(cake-open-dir "config/"))
 
 (defun cake-open-layouts-dir ()
-  "Open layouts directory."
-  (interactive)
-  (cake-open-dir "views/layouts/" t))
+"Open layouts directory."
+(interactive)
+(cake-open-dir "views/layouts/" t))
 
 (defun cake-open-elements-dir ()
-  "Open elements directory."
-  (interactive)
-  (cake-open-dir "views/elements/" t))
+"Open elements directory."
+(interactive)
+(cake-open-dir "views/elements/" t))
 
 (defun cake-open-js-dir ()
-  "Open JavaScript directory."
-  (interactive)
-  (cake-open-dir "webroot/js/" t))
+"Open JavaScript directory."
+(interactive)
+(cake-open-dir "webroot/js/" t))
 
 (defun cake-open-css-dir ()
-  "Open css directory."
-  (interactive)
-  (cake-open-dir "webroot/css/" t))
+"Open css directory."
+(interactive)
+(cake-open-dir "webroot/css/" t))
 
 (defun cake-open-tests-dir ()
-  "Open tests directory."
-  (interactive)
-  (cake-open-dir "tests/" t))
+"Open tests directory."
+(interactive)
+(cake-open-dir (list "tests/" "models/") t))
 
 (defvar cake-source-version
-  '((name . "CakePHP core version")
-    (candidates . (lambda () (list "1.2" "1.3")))
-    (action
-     ("Set Version" . (lambda (candidate)
-                        (setq cake-core-version candidate))))))
+'((name . "CakePHP core version")
+  (candidates . (lambda () (list "1.2" "1.3")))
+  (action
+   ("Set Version" . (lambda (candidate)
+                      (setq cake-core-version candidate))))))
 
 (defun cake-set-version ()
-  "Set CakePHP version."
-  (interactive)
-  (if (cake-set-app-path)
-      (anything '(cake-source-version)
-                nil "Version: " nil)))
+"Set CakePHP version."
+(interactive)
+(if (cake-set-app-path)
+    (anything '(cake-source-version)
+              nil "Version: " nil)))
 
 (defvar cake-source-models
-  '((name . "Cake Model")
-    (candidates . (lambda ()
-                    (mapcar (function (lambda (c)
-                                        (setq c (capitalize c))
-                                        (while (string-match "_\\|\.Php" c)
-                                          (setq c (replace-match "" nil nil c)))
-                                        (concat "$this->loadModel('" c "');")
-                                        ))
-                            (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
-                                                       (file-directory-p (concat cake-app-path "models/" x))))
-                                       (directory-files (concat cake-app-path "models/")))
-                            )))
-    (action
-     ("Insert Code" . (lambda (candidate)
-                        (delete-backward-char (length cake-initial-input))
-                        (insert candidate))))))
+'((name . "Cake Model")
+  (candidates . (lambda ()
+                  (mapcar (function (lambda (c)
+                                      (setq c (capitalize c))
+                                      (while (string-match "_\\|\.Php" c)
+                                        (setq c (replace-match "" nil nil c)))
+                                      (concat "$this->loadModel('" c "');")
+                                      ))
+                          (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
+                                                     (file-directory-p (concat cake-app-path "models/" x))))
+                                     (directory-files (concat cake-app-path "models/")))
+                          )))
+  (action
+   ("Insert Code" . (lambda (candidate)
+                      (delete-backward-char (length cake-initial-input))
+                      (insert candidate))))))
 
 (defvar cake-source-javascript
-  '((name . "Cake JavaScript")
-    (candidates . (lambda ()
-                    (mapcar (function (lambda (c)
-                                        (if (string-match (concat "\\.js$") c)
-                                            (setq c (replace-match "" nil nil c)))
-                                        (if (string-match "1\.3" cake-core-version)
-                                            (concat "$this->Html->script('" c "');")
-                                          (concat "$javascript->link('" c "');"))))
-                            (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
-                                                       (file-directory-p (concat cake-app-path "webroot/js/" x))))
-                                       (cake-directory-files "webroot/js/" t)))))
-    (action
-     ("Insert Code" . (lambda (candidate)
-                        (delete-backward-char (length cake-initial-input))
-                        (insert candidate))))))
+'((name . "Cake JavaScript")
+  (candidates . (lambda ()
+                  (mapcar (function (lambda (c)
+                                      (if (string-match (concat "\\.js$") c)
+                                          (setq c (replace-match "" nil nil c)))
+                                      (if (string-match "1\.3" cake-core-version)
+                                          (concat "$this->Html->script('" c "');")
+                                        (concat "$javascript->link('" c "');"))))
+                          (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
+                                                     (file-directory-p (concat cake-app-path "webroot/js/" x))))
+                                     (cake-directory-files "webroot/js/" t)))))
+  (action
+   ("Insert Code" . (lambda (candidate)
+                      (delete-backward-char (length cake-initial-input))
+                      (insert candidate))))))
 
 (defvar cake-source-css
-  '((name . "Cake Css")
-    (candidates . (lambda ()
-                    (mapcar (function (lambda (c)
-                                        (if (string-match (concat "\\.css$") c)
-                                            (setq c (replace-match "" nil nil c)))
-                                        (if (string-match "1\.3" cake-core-version)
-                                            (concat "$this->Html->css('" c "');")
-                                          (concat "$html->css('" c "');"))))
-                            (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
-                                                       (file-directory-p (concat cake-app-path "webroot/css/" x))))
-                                       (cake-directory-files "webroot/css/" t)))))
-    (action
-     ("Insert Code" . (lambda (candidate)
-                        (delete-backward-char (length cake-initial-input))
-                        (insert candidate))))))
+'((name . "Cake Css")
+  (candidates . (lambda ()
+                  (mapcar (function (lambda (c)
+                                      (if (string-match (concat "\\.css$") c)
+                                          (setq c (replace-match "" nil nil c)))
+                                      (if (string-match "1\.3" cake-core-version)
+                                          (concat "$this->Html->css('" c "');")
+                                        (concat "$html->css('" c "');"))))
+                          (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
+                                                     (file-directory-p (concat cake-app-path "webroot/css/" x))))
+                                     (cake-directory-files "webroot/css/" t)))))
+  (action
+   ("Insert Code" . (lambda (candidate)
+                      (delete-backward-char (length cake-initial-input))
+                      (insert candidate))))))
 
 (defvar cake-source-layouts
-  '((name . "Cake Layout")
-    (candidates . (lambda ()
-                    (mapcar (function (lambda (c) (concat "$this->layout = '" c "';")))
-                            (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
-                                                       (file-directory-p (concat cake-app-path "views/layouts/" x))))
-                                       (cake-directory-files "views/layouts/" t)))))
-    (action
-     ("Insert Code" . (lambda (candidate)
-                        (delete-backward-char (length cake-initial-input))
-                        (insert candidate))))))
+'((name . "Cake Layout")
+  (candidates . (lambda ()
+                  (mapcar (function (lambda (c) (concat "$this->layout = '" c "';")))
+                          (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
+                                                     (file-directory-p (concat cake-app-path "views/layouts/" x))))
+                                     (cake-directory-files "views/layouts/" t)))))
+  (action
+   ("Insert Code" . (lambda (candidate)
+                      (delete-backward-char (length cake-initial-input))
+                      (insert candidate))))))
 
 (defvar cake-source-elements
-  '((name . "Cake Element")
-    (candidates . (lambda ()
-                    (mapcar (function (lambda (c)
-                                        (if (string-match (concat "\\." cake-view-extension "$") c)
-                                            (setq c (replace-match "" nil nil c)))
-                                        (concat "$this->element('" c "');")))
-                            (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
-                                                       (file-directory-p (concat cake-app-path "views/elements/" x))))
-                                       (cake-directory-files "views/elements/" t)))))
-    (action
-     ("Insert Code" . (lambda (candidate)
-                        (delete-backward-char (length cake-initial-input))
-                        (insert candidate))))))
+'((name . "Cake Element")
+  (candidates . (lambda ()
+                  (mapcar (function (lambda (c)
+                                      (if (string-match (concat "\\." cake-view-extension "$") c)
+                                          (setq c (replace-match "" nil nil c)))
+                                      (concat "$this->element('" c "');")))
+                          (remove-if (lambda (x) (or (string-match "~$\\|\\.$" x)
+                                                     (file-directory-p (concat cake-app-path "views/elements/" x))))
+                                     (cake-directory-files "views/elements/" t)))))
+  (action
+   ("Insert Code" . (lambda (candidate)
+                      (delete-backward-char (length cake-initial-input))
+                      (insert candidate))))))
 
 ;;php-completion.el code
 (defvar cake-initial-input nil)
 (defun cake-get-initial-input ()
-  (setq cake-initial-input
-        (buffer-substring-no-properties (point)
-                                        (progn (save-excursion
-                                                 (skip-syntax-backward "w_")
-                                                 (point))))))
+(setq cake-initial-input
+      (buffer-substring-no-properties (point)
+                                      (progn (save-excursion
+                                               (skip-syntax-backward "w_")
+                                               (point))))))
 
 (defun cake-complete ()
-  "Insert CakePHP code."
-  (interactive)
-  (if (cake-set-app-path)
-      (cond
-       ((cake-is-controller-file)
-        (anything
-         '(cake-source-layouts
-           cake-source-models)
-         (cake-get-initial-input) "Find Code: " nil))
-       ((cake-is-view-file)
-        (anything
-         '(cake-source-javascript
-           cake-source-css
-           cake-source-elements)
-         (cake-get-initial-input) "Find Code: " nil))
-       (t
-        (anything
-         '(cake-source-javascript
-           cake-source-css
-           cake-source-elements
-           cake-source-layouts
-           cake-source-models)
-         (cake-get-initial-input) "Find Code: " nil))
-       )))
+"Insert CakePHP code."
+(interactive)
+(if (cake-set-app-path)
+    (cond
+     ((cake-is-controller-file)
+      (anything
+       '(cake-source-layouts
+         cake-source-models)
+       (cake-get-initial-input) "Find Code: " nil))
+     ((cake-is-view-file)
+      (anything
+       '(cake-source-javascript
+         cake-source-css
+         cake-source-elements)
+       (cake-get-initial-input) "Find Code: " nil))
+     (t
+      (anything
+       '(cake-source-javascript
+         cake-source-css
+         cake-source-elements
+         cake-source-layouts
+         cake-source-models)
+       (cake-get-initial-input) "Find Code: " nil))
+     )))
 
 (defun cake-logs ()
-  "Set logs list."
-  (if (cake-set-app-path)
-      (mapcar
-       (function (lambda (el)
-                   (if (listp el) el(cons el el))))
-       (directory-files (concat cake-app-path "tmp/logs/") nil "\\.log$"))
-    nil))
+"Set logs list."
+(if (cake-set-app-path)
+    (mapcar
+     (function (lambda (el)
+                 (if (listp el) el(cons el el))))
+     (directory-files (concat cake-app-path "tmp/logs/") nil "\\.log$"))
+  nil))
 
 (defun cake-tail-log (log)
-  "Show log by \"tail\"."
-  (interactive
-   (list (completing-read "tail log: " (cake-logs) nil t "debug.log")))
-  (if (require 'tail nil t)             ;xcezx patch.
-      (tail-file (concat cake-app-path "tmp/logs/" log))
-    (let ((logbuffer (concat "*" log "*")))
-      (if (and (cake-logs) (executable-find "tail"))
-          (progn
-            (unless (get-buffer logbuffer)
-              (get-buffer-create logbuffer)
-              (set-buffer logbuffer)
-              (insert-before-markers (concat "tail -f" cake-app-path "tmp/logs/" log "\n"))
-              (setq buffer-read-only t)
-              (start-process "tail" logbuffer "tail" "-f" (concat cake-app-path "tmp/logs/" log)))
-            (switch-to-buffer logbuffer))
-        (message "Can't set log.")))))
+"Show log by \"tail\"."
+(interactive
+ (list (completing-read "tail log: " (cake-logs) nil t "debug.log")))
+(if (require 'tail nil t)               ;xcezx patch.
+    (tail-file (concat cake-app-path "tmp/logs/" log))
+  (let ((logbuffer (concat "*" log "*")))
+    (if (and (cake-logs) (executable-find "tail"))
+        (progn
+          (unless (get-buffer logbuffer)
+            (get-buffer-create logbuffer)
+            (set-buffer logbuffer)
+            (insert-before-markers (concat "tail -f" cake-app-path "tmp/logs/" log "\n"))
+            (setq buffer-read-only t)
+            (start-process "tail" logbuffer "tail" "-f" (concat cake-app-path "tmp/logs/" log)))
+          (switch-to-buffer logbuffer))
+      (message "Can't set log.")))))
 
 (defun cake-singularize (str)
-  "Singularize str"
-  (interactive)
-  (let ((result str))
-    (loop for rule in cake-singular-rules do
-          (unless (not (string-match (nth 0 rule) str))
-            (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))))
+"Singularize str"
+(interactive)
+(let ((result str))
+  (loop for rule in cake-singular-rules do
+        (unless (not (string-match (nth 0 rule) str))
+          (setq result (replace-match (nth 1 rule) nil nil str))
+          (return result)))))
 ;;(cake-singularize "cases")
 
 (defun cake-pluralize (str)
-  "Pluralize str"
-  (interactive)
-  (let ((result str))
-    (loop for rule in cake-plural-rules do
-          (unless (not (string-match (nth 0 rule) str))
-            (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))))
+"Pluralize str"
+(interactive)
+(let ((result str))
+  (loop for rule in cake-plural-rules do
+        (unless (not (string-match (nth 0 rule) str))
+          (setq result (replace-match (nth 1 rule) nil nil str))
+          (return result)))))
 ;;(cake-pluralize "case")
 
 (defun cake-camelize (str)
-  "Camelize snake_case str"
-  (let ((camelize-str str) (case-fold-search nil))
-    (setq camelize-str (capitalize (downcase camelize-str)))
-    (replace-regexp-in-string
-     "_" ""
-     camelize-str)))
+"Camelize snake_case str"
+(let ((camelize-str str) (case-fold-search nil))
+  (setq camelize-str (capitalize (downcase camelize-str)))
+  (replace-regexp-in-string
+   "_" ""
+   camelize-str)))
 ;;(cake-camelize "cake_camelize")
 
 (defun cake-lower-camelize (str)
-  "lowerCamelize snake_case str"
-  (let ((head-str "") (tail-str "") (case-fold-search nil))
-    (if (string-match "^\\([a-z]+_\\)\\([a-z0-9_]*\\)" (downcase str))
-        (progn
-          (setq head-str (match-string 1 (downcase str)))
-          (setq tail-str (match-string 2 (capitalize str)))
-          (if (string-match "_" head-str)
-              (setq head-str (replace-match "" t nil head-str)))
-          (while (string-match "_" tail-str)
-            (setq tail-str (replace-match "" t nil tail-str)))
-          (concat head-str tail-str))
-      str)))
+"lowerCamelize snake_case str"
+(let ((head-str "") (tail-str "") (case-fold-search nil))
+  (if (string-match "^\\([a-z]+_\\)\\([a-z0-9_]*\\)" (downcase str))
+      (progn
+        (setq head-str (match-string 1 (downcase str)))
+        (setq tail-str (match-string 2 (capitalize str)))
+        (if (string-match "_" head-str)
+            (setq head-str (replace-match "" t nil head-str)))
+        (while (string-match "_" tail-str)
+          (setq tail-str (replace-match "" t nil tail-str)))
+        (concat head-str tail-str))
+    str)))
 ;;(cake-lower-camelize "cake_lower_camelize")
 
 (defun cake-snake (str) ;;copied from rails-lib.el
-  "Change snake_case."
-  (let ((case-fold-search nil))
-    (downcase
-     (replace-regexp-in-string
-      "\\([A-Z]+\\)\\([A-Z][a-z]\\)" "\\1_\\2"
-      (replace-regexp-in-string
-       "\\([a-z\\d]\\)\\([A-Z]\\)" "\\1_\\2"
-       str)))))
+"Change snake_case."
+(let ((case-fold-search nil))
+  (downcase
+   (replace-regexp-in-string
+    "\\([A-Z]+\\)\\([A-Z][a-z]\\)" "\\1_\\2"
+    (replace-regexp-in-string
+     "\\([a-z\\d]\\)\\([A-Z]\\)" "\\1_\\2"
+     str)))))
 ;;(cake-snake "CakeSnake")
 ;;(cake-snake "CCakeSnake")
 
 ;;; anything sources and functions
 
 (when (require 'anything-show-completion nil t)
-  (use-anything-show-completion 'anything-c-cake-anything-only-function
-                                '(length cake-initial-input)))
+(use-anything-show-completion 'anything-c-cake-anything-only-function
+                              '(length cake-initial-input)))
 
 (defvar cake-candidate-function-name nil)
 
 (defvar anything-c-cake-po-file-buffer-name "*Cake Po*")
 
 (defvar anything-c-source-cake
-  '((name . "Cake Switch")
-    (init
-     . (lambda ()
-         (if
-             (and (cake-set-app-path) (executable-find "grep"))
-             (with-current-buffer (anything-candidate-buffer 'local)
-               (call-process-shell-command
-                (concat "grep '[^_]function' "
-                        cake-app-path
-                        "controllers/*_controller.php --with-filename")
-                nil (current-buffer))
-               (call-process-shell-command
-                (concat "grep '[^_]function' "
-                        cake-app-path
-                        "*_controller.php --with-filename")
-                nil (current-buffer))
-               (goto-char (point-min))
-               (while (re-search-forward ".+\\/\\([^\\/]+\\)_controller\.php:.*function *\\([^ ]+\\) *(.*).*$" nil t)
-                 (replace-match (concat (match-string 1) " / " (match-string 2))))
-               )
+'((name . "Cake Switch")
+  (init
+   . (lambda ()
+       (if
+           (and (cake-set-app-path) (executable-find "grep"))
            (with-current-buffer (anything-candidate-buffer 'local)
-             (call-process-shell-command nil nil (current-buffer)))
-           )))
-    (candidates-in-buffer)
-    (display-to-real . anything-c-cake-set-names)
-    (action
-     ("Switch to Contoroller" . (lambda (candidate)
-                                  (anything-c-cake-switch-to-controller)))
-     ("Switch to View" . (lambda (candidate)
-                           (anything-c-cake-switch-to-view)))
-     ("Switch to Model" . (lambda (candidate)
-                            (anything-c-cake-switch-to-model))))))
+             (call-process-shell-command
+              (concat "grep '[^_]function' "
+                      cake-app-path
+                      "controllers/*_controller.php --with-filename")
+              nil (current-buffer))
+             (call-process-shell-command
+              (concat "grep '[^_]function' "
+                      cake-app-path
+                      "*_controller.php --with-filename")
+              nil (current-buffer))
+             (goto-char (point-min))
+             (while (re-search-forward ".+\\/\\([^\\/]+\\)_controller\.php:.*function *\\([^ ]+\\) *(.*).*$" nil t)
+               (replace-match (concat (match-string 1) " / " (match-string 2))))
+             )
+         (with-current-buffer (anything-candidate-buffer 'local)
+           (call-process-shell-command nil nil (current-buffer)))
+         )))
+  (candidates-in-buffer)
+  (display-to-real . anything-c-cake-set-names)
+  (action
+   ("Switch to Contoroller" . (lambda (candidate)
+                                (anything-c-cake-switch-to-controller)))
+   ("Switch to View" . (lambda (candidate)
+                         (anything-c-cake-switch-to-view)))
+   ("Switch to Model" . (lambda (candidate)
+                          (anything-c-cake-switch-to-model))))))
 
 (defun anything-c-cake-set-names (candidate)
-  "Set names by display-to-real"
-  (progn
-    (string-match "\\(.+\\) / \\(.+\\)" candidate)
-    (setq cake-plural-name (match-string 1 candidate))
-    (setq cake-action-name (match-string 2 candidate))
-    (setq cake-singular-name (cake-singularize cake-plural-name))
-    (setq cake-lower-camelized-action-name cake-action-name)
-    (setq cake-snake-action-name (cake-snake cake-action-name))))
+"Set names by display-to-real"
+(progn
+  (string-match "\\(.+\\) / \\(.+\\)" candidate)
+  (setq cake-plural-name (match-string 1 candidate))
+  (setq cake-action-name (match-string 2 candidate))
+  (setq cake-singular-name (cake-singularize cake-plural-name))
+  (setq cake-lower-camelized-action-name cake-action-name)
+  (setq cake-snake-action-name (cake-snake cake-action-name))))
 
 (defun anything-c-cake-switch-to-view ()
-  "Switch to view."
-  (progn
-    (cake-set-app-path)
-    (cond ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
-          ((y-or-n-p "Make new file?")
-           (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
-             (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
-          (t (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))))))
+"Switch to view."
+(progn
+  (cake-set-app-path)
+  (cond ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
+        ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
+        ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp"))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
+        ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+        ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml"))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
+        ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp"))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
+        ((y-or-n-p "Make new file?")
+         (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
+           (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
+         (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+        (t (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))))))
 
 (defun anything-c-cake-switch-to-controller ()
-  "Switch to contoroller."
-  (cake-set-app-path)
-  (if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+"Switch to contoroller."
+(cake-set-app-path)
+(if (file-exists-p (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+    (progn
+      (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+      (goto-char (point-min))
+      (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
+          (progn
+            (goto-char (point-min))
+            (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
+  (if (file-exists-p (concat cake-app-path cake-plural-name "_controller.php"))
       (progn
-        (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+        (find-file (concat cake-app-path cake-plural-name "_controller.php"))
         (goto-char (point-min))
         (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
             (progn
               (goto-char (point-min))
               (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
-    (if (file-exists-p (concat cake-app-path cake-plural-name "_controller.php"))
-        (progn
-          (find-file (concat cake-app-path cake-plural-name "_controller.php"))
-          (goto-char (point-min))
-          (if (not (re-search-forward (concat "function[ \t]*" cake-lower-camelized-action-name "[ \t]*\(") nil t))
-              (progn
-                (goto-char (point-min))
-                (re-search-forward (concat "function[ \t]*" cake-action-name "[ \t]*\(") nil t))))
-      (if (y-or-n-p "Make new file?")
-          (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
-        (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
+    (if (y-or-n-p "Make new file?")
+        (find-file (concat cake-app-path "controllers/" cake-plural-name "_controller.php"))
+      (message (format "Can't find %s" (concat cake-app-path "controllers/" cake-plural-name "_controller.php")))))))
 
 (defun anything-c-cake-switch-to-model ()
-  "Switch to model."
-  (cake-set-app-path)
-  (if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
+"Switch to model."
+(cake-set-app-path)
+(if (file-exists-p (concat cake-app-path "models/" cake-singular-name ".php"))
+    (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
+  (if (y-or-n-p "Make new file?")
       (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-    (if (y-or-n-p "Make new file?")
-        (find-file (concat cake-app-path "models/" cake-singular-name ".php"))
-      (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
+    (message (format "Can't find %s" (concat cake-app-path "models/" cake-singular-name ".php"))))))
 
 (defun anything-c-cake-switch-to-file-function (dir)
-  "Switch to file and search function."
-  (cake-set-app-path)
-  (if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
-      (if (y-or-n-p "Make new file?")
-          (find-file (concat cake-app-path dir cake-singular-name ".php"))
-        (message (format "Can't find %s" (concat cake-app-path dir cake-singular-name ".php"))))
-    (find-file (concat cake-app-path dir cake-singular-name ".php"))
-    (goto-char (point-min))
-    (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
+"Switch to file and search function."
+(cake-set-app-path)
+(if (not (file-exists-p (concat cake-app-path dir cake-singular-name ".php")))
+    (if (y-or-n-p "Make new file?")
+        (find-file (concat cake-app-path dir cake-singular-name ".php"))
+      (message (format "Can't find %s" (concat cake-app-path dir cake-singular-name ".php"))))
+  (find-file (concat cake-app-path dir cake-singular-name ".php"))
+  (goto-char (point-min))
+  (re-search-forward (concat "function[ \t]*" cake-candidate-function-name "[ \t]*\(") nil t)))
 
 (defvar anything-c-source-cake-model-function
-  '((name . "Cake Model Function Switch")
-    (init
-     . (lambda ()
-         (if
-             (and (cake-set-app-path) (executable-find "grep"))
-             (with-current-buffer (anything-candidate-buffer 'local)
-               (call-process-shell-command
-                (concat "grep '[^_]function' "
-                        cake-app-path
-                        "models/*.php --with-filename")
-                nil (current-buffer))
-               (goto-char (point-min))
-               (while (not (eobp))
-                 (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
-                     (goto-char (point-max))
-                   (setq class-name (cake-camelize (match-string 1)))
-                   (setq function-name (match-string 2))
-                   (delete-region (point) (save-excursion (beginning-of-line) (point)))
-                   (insert (concat class-name "->" function-name))
-                   )))
+'((name . "Cake Model Function Switch")
+  (init
+   . (lambda ()
+       (if
+           (and (cake-set-app-path) (executable-find "grep"))
            (with-current-buffer (anything-candidate-buffer 'local)
-             (call-process-shell-command nil nil (current-buffer)))
-           )))
-    (candidates-in-buffer)
-    (display-to-real . anything-c-cake-set-names2)
-    (action
-     ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-file-function "models/")))
-     ("Insert" . (lambda (candidate)
-                   (insert candidate))))))
+             (call-process-shell-command
+              (concat "grep '[^_]function' "
+                      cake-app-path
+                      "models/*.php --with-filename")
+              nil (current-buffer))
+             (goto-char (point-min))
+             (while (not (eobp))
+               (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+                   (goto-char (point-max))
+                 (setq class-name (cake-camelize (match-string 1)))
+                 (setq function-name (match-string 2))
+                 (delete-region (point) (save-excursion (beginning-of-line) (point)))
+                 (insert (concat class-name "->" function-name))
+                 )))
+         (with-current-buffer (anything-candidate-buffer 'local)
+           (call-process-shell-command nil nil (current-buffer)))
+         )))
+  (candidates-in-buffer)
+  (display-to-real . anything-c-cake-set-names2)
+  (action
+   ("Switch to Function" . (lambda (candidate)
+                             (anything-c-cake-switch-to-file-function "models/")))
+   ("Insert" . (lambda (candidate)
+                 (insert candidate))))))
 
 (defvar anything-c-source-cake-component-function
-  '((name . "Cake Component Function Switch")
-    (init
-     . (lambda ()
-         (if
-             (and (cake-set-app-path) (executable-find "grep"))
-             (with-current-buffer (anything-candidate-buffer 'local)
-               (call-process-shell-command
-                (concat "grep '[^_]function' "
-                        cake-app-path
-                        "controllers/components/*.php --with-filename")
-                nil (current-buffer))
-               (goto-char (point-min))
-               (while (not (eobp))
-                 (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
-                     (goto-char (point-max))
-                   (setq class-name (cake-camelize (match-string 1)))
-                   (setq function-name (match-string 2))
-                   (delete-region (point) (save-excursion (beginning-of-line) (point)))
-                   (insert (concat class-name "->" function-name))
-                   )))
+'((name . "Cake Component Function Switch")
+  (init
+   . (lambda ()
+       (if
+           (and (cake-set-app-path) (executable-find "grep"))
            (with-current-buffer (anything-candidate-buffer 'local)
-             (call-process-shell-command nil nil (current-buffer)))
-           )))
-    (candidates-in-buffer)
-    (display-to-real . anything-c-cake-set-names2)
-    (action
-     ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-file-function "controllers/components/")))
-     ("Insert" . (lambda (candidate)
-                   (insert candidate))))))
+             (call-process-shell-command
+              (concat "grep '[^_]function' "
+                      cake-app-path
+                      "controllers/components/*.php --with-filename")
+              nil (current-buffer))
+             (goto-char (point-min))
+             (while (not (eobp))
+               (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+                   (goto-char (point-max))
+                 (setq class-name (cake-camelize (match-string 1)))
+                 (setq function-name (match-string 2))
+                 (delete-region (point) (save-excursion (beginning-of-line) (point)))
+                 (insert (concat class-name "->" function-name))
+                 )))
+         (with-current-buffer (anything-candidate-buffer 'local)
+           (call-process-shell-command nil nil (current-buffer)))
+         )))
+  (candidates-in-buffer)
+  (display-to-real . anything-c-cake-set-names2)
+  (action
+   ("Switch to Function" . (lambda (candidate)
+                             (anything-c-cake-switch-to-file-function "controllers/components/")))
+   ("Insert" . (lambda (candidate)
+                 (insert candidate))))))
 
 (defvar anything-c-source-cake-behavior-function
-  '((name . "Cake Behavior Function Switch")
-    (init
-     . (lambda ()
-         (if
-             (and (cake-set-app-path) (executable-find "grep"))
-             (with-current-buffer (anything-candidate-buffer 'local)
-               (call-process-shell-command
-                (concat "grep '[^_]function' "
-                        cake-app-path
-                        "models/behaviors/*.php --with-filename")
-                nil (current-buffer))
-               (goto-char (point-min))
-               (while (not (eobp))
-                 (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
-                     (goto-char (point-max))
-                   (setq class-name (cake-camelize (match-string 1)))
-                   (setq function-name (match-string 2))
-                   (delete-region (point) (save-excursion (beginning-of-line) (point)))
-                   (insert (concat class-name "->" function-name))
-                   )))
+'((name . "Cake Behavior Function Switch")
+  (init
+   . (lambda ()
+       (if
+           (and (cake-set-app-path) (executable-find "grep"))
            (with-current-buffer (anything-candidate-buffer 'local)
-             (call-process-shell-command nil nil (current-buffer)))
-           )))
-    (candidates-in-buffer)
-    (display-to-real . anything-c-cake-set-names2)
-    (action
-     ("Switch to Function" . (lambda (candidate)
-                               (anything-c-cake-switch-to-file-function "models/behaviors/")))
-     ("Insert" . (lambda (candidate)
-                   (insert candidate))))))
+             (call-process-shell-command
+              (concat "grep '[^_]function' "
+                      cake-app-path
+                      "models/behaviors/*.php --with-filename")
+              nil (current-buffer))
+             (goto-char (point-min))
+             (while (not (eobp))
+               (if (not (re-search-forward ".+\\/\\(.+\\)\.php:.*function *\\([^ ]+\\) *(.*).*" nil t))
+                   (goto-char (point-max))
+                 (setq class-name (cake-camelize (match-string 1)))
+                 (setq function-name (match-string 2))
+                 (delete-region (point) (save-excursion (beginning-of-line) (point)))
+                 (insert (concat class-name "->" function-name))
+                 )))
+         (with-current-buffer (anything-candidate-buffer 'local)
+           (call-process-shell-command nil nil (current-buffer)))
+         )))
+  (candidates-in-buffer)
+  (display-to-real . anything-c-cake-set-names2)
+  (action
+   ("Switch to Function" . (lambda (candidate)
+                             (anything-c-cake-switch-to-file-function "models/behaviors/")))
+   ("Insert" . (lambda (candidate)
+                 (insert candidate))))))
 
 (defun anything-c-cake-set-names2 (candidate)
-  "Set names by display-to-real"
-  (progn
-    (string-match "\\(.+\\)->\\(.+\\)" candidate)
-    (setq cake-camelized-singular-name (match-string 1 candidate))
-    (setq cake-candidate-function-name (match-string 2 candidate))
-    (setq cake-singular-name (cake-snake cake-camelized-singular-name))))
+"Set names by display-to-real"
+(progn
+  (string-match "\\(.+\\)->\\(.+\\)" candidate)
+  (setq cake-camelized-singular-name (match-string 1 candidate))
+  (setq cake-candidate-function-name (match-string 2 candidate))
+  (setq cake-singular-name (cake-snake cake-camelized-singular-name))))
 
 (defun anything-c-cake-create-po-file-buffer ()
-  "Create buffer from po file."
-  (let ((anything-buffer (anything-candidate-buffer 'global)))
-    (catch 'invalid-po-file
-      (unless (anything-c-cake-generate-po-file-buffer (concat cake-app-path "locale/" cake-po-file-path))
-        (message "Can't find po file: %s" (concat cake-app-path "locale/" cake-po-file-path))
-        (throw 'invalid-po-file nil))
-      (with-current-buffer anything-buffer
-        (set-syntax-table (with-current-buffer anything-current-buffer
-                            (syntax-table)))
-        (insert-buffer-substring anything-c-cake-po-file-buffer-name)))))
+"Create buffer from po file."
+(let ((anything-buffer (anything-candidate-buffer 'global)))
+  (catch 'invalid-po-file
+    (unless (anything-c-cake-generate-po-file-buffer (concat cake-app-path "locale/" cake-po-file-path))
+      (message "Can't find po file: %s" (concat cake-app-path "locale/" cake-po-file-path))
+      (throw 'invalid-po-file nil))
+    (with-current-buffer anything-buffer
+      (set-syntax-table (with-current-buffer anything-current-buffer
+                          (syntax-table)))
+      (insert-buffer-substring anything-c-cake-po-file-buffer-name)))))
 
 (defun anything-c-cake-generate-po-file-buffer (po-file)
-  "Generate po file buffer"
-  (when (and po-file
-             (file-exists-p po-file)
-             (file-regular-p po-file))
-    (with-current-buffer (get-buffer-create anything-c-cake-po-file-buffer-name)
+"Generate po file buffer"
+(when (and po-file
+           (file-exists-p po-file)
+           (file-regular-p po-file))
+  (with-current-buffer (get-buffer-create anything-c-cake-po-file-buffer-name)
 
-      (erase-buffer)
-      (insert-file-contents po-file)
+    (erase-buffer)
+    (insert-file-contents po-file)
 
-      (goto-char (point-min))
-      (while (re-search-forward "^[^m].*\n" nil t)
-        (replace-match ""))
+    (goto-char (point-min))
+    (while (re-search-forward "^[^m].*\n" nil t)
+      (replace-match ""))
 
-      (goto-char (point-min))
-      (while (re-search-forward "^msgid \"\\(.*\\)\"\nmsgstr \"\\(.*\\)\"$" nil t)
-        (replace-match "\\1 / \\2"))
-      )
-    t))
+    (goto-char (point-min))
+    (while (re-search-forward "^msgid \"\\(.*\\)\"\nmsgstr \"\\(.*\\)\"$" nil t)
+      (replace-match "\\1 / \\2"))
+    )
+  t))
 
 (defvar anything-c-source-cake-po
-  '((name . "Cake po file's msgid and msgstr")
-    (init . (lambda ()
-              (cake-set-app-path)
-              (setq path cake-app-path)
-              (anything-c-cake-create-po-file-buffer)))
-    (candidates-in-buffer)
-    (action
-     ("Insert __('msgid')." . (lambda (candidate)
-                                (insert (concat "__('" (anything-c-cake-get-msgid candidate) "')"))))
-     ("Insert __('msgid',true)." . (lambda (candidate)
-                                     (insert (concat "__('" (anything-c-cake-get-msgid candidate) "',true)"))))
-     ("Insert msgid." . (lambda (candidate)
-                          (insert (anything-c-cake-get-msgid candidate))))
-     ("Insert msgstr." . (lambda (candidate)
-                           (insert (anything-c-cake-get-msgstr candidate))))
-     ("Goto po file" . (lambda (candidate)
-                         (find-file (concat path "locale/" cake-po-file-path))
-                         (goto-char (point-min))
-                         (re-search-forward (concat "\"" (anything-c-cake-get-msgid candidate) "\"") nil t))))))
+'((name . "Cake po file's msgid and msgstr")
+  (init . (lambda ()
+            (cake-set-app-path)
+            (setq path cake-app-path)
+            (anything-c-cake-create-po-file-buffer)))
+  (candidates-in-buffer)
+  (action
+   ("Insert __('msgid')." . (lambda (candidate)
+                              (insert (concat "__('" (anything-c-cake-get-msgid candidate) "')"))))
+   ("Insert __('msgid',true)." . (lambda (candidate)
+                                   (insert (concat "__('" (anything-c-cake-get-msgid candidate) "',true)"))))
+   ("Insert msgid." . (lambda (candidate)
+                        (insert (anything-c-cake-get-msgid candidate))))
+   ("Insert msgstr." . (lambda (candidate)
+                         (insert (anything-c-cake-get-msgstr candidate))))
+   ("Goto po file" . (lambda (candidate)
+                       (find-file (concat path "locale/" cake-po-file-path))
+                       (goto-char (point-min))
+                       (re-search-forward (concat "\"" (anything-c-cake-get-msgid candidate) "\"") nil t))))))
 
 (defvar anything-c-source-cake-po-not-found
-  '((name . "Create __()")
-    (init . (lambda ()
-              (cake-set-app-path)
-              (setq path cake-app-path)))
-    (dummy)
-    (action
-     ("Insert __('msgid')." . (lambda (candidate)
-                                (insert (concat "__('" candidate "')"))))
-     ("Insert __('msgid',true)." . (lambda (candidate)
-                                     (insert (concat "__('" candidate "',true)"))))
-     ("Insert msgid." . (lambda (candidate)
-                          (insert candidate)))
-     ("Goto po file" . (lambda (candidate)
-                         (find-file (concat path "locale/" cake-po-file-path))
-                         (goto-char (point-max)))))))
+'((name . "Create __()")
+  (init . (lambda ()
+            (cake-set-app-path)
+            (setq path cake-app-path)))
+  (dummy)
+  (action
+   ("Insert __('msgid')." . (lambda (candidate)
+                              (insert (concat "__('" candidate "')"))))
+   ("Insert __('msgid',true)." . (lambda (candidate)
+                                   (insert (concat "__('" candidate "',true)"))))
+   ("Insert msgid." . (lambda (candidate)
+                        (insert candidate)))
+   ("Goto po file" . (lambda (candidate)
+                       (find-file (concat path "locale/" cake-po-file-path))
+                       (goto-char (point-max)))))))
 
 (defun anything-c-cake-get-msgid (candidate)
-  "Set msgid"
-  (progn
-    (string-match "\\(.+\\) /" candidate)
-    (match-string 1 candidate)))
+"Set msgid"
+(progn
+  (string-match "\\(.+\\) /" candidate)
+  (match-string 1 candidate)))
 
 (defun anything-c-cake-get-msgstr (candidate)
-  "Set msgstr"
-  (progn
-    (string-match "/ \\(.+\\)$" candidate)
-    (match-string 1 candidate)))
+"Set msgstr"
+(progn
+  (string-match "/ \\(.+\\)$" candidate)
+  (match-string 1 candidate)))
 
 (defun anything-c-cake-anything-only-source-cake ()
-  "anything only anything-c-source-cake and anything-c-source-cake-model-function."
-  (interactive)
-  (anything (list anything-c-source-cake
-                  anything-c-source-cake-model-function
-                  anything-c-source-cake-component-function
-                  anything-c-source-cake-behavior-function)
-            nil "Find CakePHP Sources: " nil nil))
+"anything only anything-c-source-cake and anything-c-source-cake-model-function."
+(interactive)
+(anything (list anything-c-source-cake
+                anything-c-source-cake-model-function
+                anything-c-source-cake-component-function
+                anything-c-source-cake-behavior-function)
+          nil "Find CakePHP Sources: " nil nil))
 
 (defun anything-c-cake-anything-only-function ()
-  "anything only anything-c-source-cake-function."
-  (interactive)
-  (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
-    (anything (list anything-c-source-cake-model-function
-                    anything-c-source-cake-component-function
-                    anything-c-source-cake-behavior-function) initial-pattern "Find Cake Functions: " nil)))
+"anything only anything-c-source-cake-function."
+(interactive)
+(let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
+  (anything (list anything-c-source-cake-model-function
+                  anything-c-source-cake-component-function
+                  anything-c-source-cake-behavior-function) initial-pattern "Find Cake Functions: " nil)))
 
 (defun anything-c-cake-anything-only-model-function ()
-  "anything only anything-c-source-cake-model-function."
-  (interactive)
-  (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
-    (anything '(anything-c-source-cake-model-function) initial-pattern "Find Model Functions: " nil)))
+"anything only anything-c-source-cake-model-function."
+(interactive)
+(let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
+  (anything '(anything-c-source-cake-model-function) initial-pattern "Find Model Functions: " nil)))
 
 (defun anything-c-cake-anything-only-po ()
-  "anything only anything-c-source-cake-po."
-  (interactive)
-  (let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
-    (anything (list anything-c-source-cake-po
-                    anything-c-source-cake-po-not-found)
-              initial-pattern "Find Msgid And Msgstr: " nil)))
+"anything only anything-c-source-cake-po."
+(interactive)
+(let* ((initial-pattern (regexp-quote (or (thing-at-point 'symbol) ""))))
+  (anything (list anything-c-source-cake-po
+                  anything-c-source-cake-po-not-found)
+            initial-pattern "Find Msgid And Msgstr: " nil)))
 
 ;; mode provide
 (provide 'cake)
