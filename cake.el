@@ -143,6 +143,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Update function cake-open-views-dir (themed directory support).
 ;; -.-.-: Update function cake-open-dir (multi directory support).
 ;; 1.3.1: Fix doc.
 ;;        New function cake-singularize, cake-pluralize.
@@ -811,7 +812,7 @@
                      (type . file))
                    sources)
                   ))
-          sources)
+          (reverse sources))
       (message "Can't set app path."))))
 
 (defun cake-directory-files (dir &optional recursive)
@@ -851,9 +852,29 @@
 (defun cake-open-views-dir ()
   "Open views directory."
   (interactive)
-  (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
-      (cake-open-dir (concat "views/" cake-plural-name "/"))
-    (cake-open-dir "views/" t)))
+  (let ((themed-list (cake-find-themed-dir)))
+    (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
+        (progn
+          (setq themed-list (mapcar (function (lambda (c) (if c (concat c cake-plural-name "/") nil))) themed-list))
+          (push (concat "views/" cake-plural-name "/") themed-list)
+          (cake-open-dir themed-list))
+      (push "views/" themed-list)
+      (cake-open-dir themed-list t))))
+
+(defun cake-find-themed-dir ()
+  "Find themed directory. like app/views/themed/m"
+  (let (themed-dir themed-list)
+    (if (and (cake-set-app-path) (file-directory-p (concat cake-app-path "views/themed")))
+        (progn
+          (setq themed-dir (concat cake-app-path "views/themed/"))
+          (loop for x in (directory-files themed-dir)
+                do (unless (or
+                            (not (file-directory-p (concat themed-dir x)))
+                            (string-match "\\.\\.?" x))
+                     (push (concat "views/themed/" x "/") themed-list)))
+          (message "%s" themed-list)
+          (reverse themed-list))
+      (message "Can't set app path."))))
 
 (defun cake-open-controllers-dir ()
   "Open contorollers directory."
@@ -903,7 +924,7 @@
 (defun cake-open-tests-dir ()
   "Open tests directory."
   (interactive)
-  (cake-open-dir "tests/" t))
+  (cake-open-dir (list "tests/cases/" "tests/fixtures/" "tests/groups/") t))
 
 (defvar cake-source-version
   '((name . "CakePHP core version")
