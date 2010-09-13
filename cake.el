@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.1
+;; Version: 1.3.2
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -143,8 +143,8 @@
 ;;    default = "1.3"
 
 ;;; Change Log
-;; -.-.-: Update function cake-open-views-dir (themed directory support).
-;; -.-.-: Update function cake-open-dir (multi directory support).
+;; 1.3.2: Update function cake-open-views-dir, cake-open-layouts-dir, cake-open-elements-dir (themed directory support).
+;;        Update function cake-open-dir (multi directory support).
 ;; 1.3.1: Fix doc.
 ;;        New function cake-singularize, cake-pluralize.
 ;;        Remove function cake-convert-singular-to-plural, cake-convert-plural-to-singular.
@@ -904,12 +904,18 @@
 (defun cake-open-layouts-dir ()
   "Open layouts directory."
   (interactive)
-  (cake-open-dir "views/layouts/" t))
+  (let ((themed-list (cake-find-themed-dir)))
+    (setq themed-list (mapcar (function (lambda (c) (if c (concat c "layouts/") nil))) themed-list))
+    (push (concat "views/layouts/") themed-list)
+    (cake-open-dir themed-list t)))
 
 (defun cake-open-elements-dir ()
   "Open elements directory."
   (interactive)
-  (cake-open-dir "views/elements/" t))
+  (let ((themed-list (cake-find-themed-dir)))
+    (setq themed-list (mapcar (function (lambda (c) (if c (concat c "elements/") nil))) themed-list))
+    (push (concat "views/elements/") themed-list)
+    (cake-open-dir themed-list t)))
 
 (defun cake-open-js-dir ()
   "Open JavaScript directory."
