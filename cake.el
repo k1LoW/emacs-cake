@@ -143,6 +143,8 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Update function cake-is-views-dir (themed directory support)
+;; -.-.-: Refactor code.
 ;; 1.3.2: Update function cake-open-views-dir, cake-open-layouts-dir, cake-open-elements-dir (themed directory support).
 ;;        Update function cake-open-dir (multi directory support).
 ;; 1.3.1: Fix doc.
@@ -311,10 +313,16 @@
 (defvar cake-plural-name nil
   "CakePHP current plural name.")
 
+(defvar cake-themed-name nil
+  "CakePHP current view themed name.")
+
 (defvar cake-model-regexp "^.+/app/models/\\([^/]+\\)\.php$"
   "Model file regExp.")
 
 (defvar cake-view-regexp "^.+/app/views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"
+  "View file regExp.")
+
+(defvar cake-themed-regexp "^.+/app/views/themed/\\([^/]+\\)/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"
   "View file regExp.")
 
 (defvar cake-controller-regexp "^.+/app/controllers/\\([^/]+\\)_controller\.php$"
@@ -398,14 +406,23 @@
 (defun cake-is-view-file ()
   "Check whether current file is view file."
   (cake-set-app-path)
-  (if (not (string-match cake-view-regexp (buffer-file-name)))
-      nil
-    (setq cake-plural-name (match-string 1 (buffer-file-name)))
-    (setq cake-action-name (match-string 3 (buffer-file-name)))
-    (setq cake-view-extension (match-string 4 (buffer-file-name)))
-    (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
-    (setq cake-singular-name (cake-singularize cake-plural-name))
-    (setq cake-current-file-type 'view)))
+  (if (string-match cake-themed-regexp (buffer-file-name))
+      (progn
+        (setq cake-themed-name (match-string 1 (buffer-file-name)))
+        (setq cake-plural-name (match-string 2 (buffer-file-name)))
+        (setq cake-action-name (match-string 4 (buffer-file-name)))
+        (setq cake-view-extension (match-string 5 (buffer-file-name)))
+        (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
+        (setq cake-singular-name (cake-singularize cake-plural-name))
+        (setq cake-current-file-type 'view))
+    (if (not (string-match cake-view-regexp (buffer-file-name)))
+        nil
+      (setq cake-plural-name (match-string 1 (buffer-file-name)))
+      (setq cake-action-name (match-string 3 (buffer-file-name)))
+      (setq cake-view-extension (match-string 4 (buffer-file-name)))
+      (setq cake-lower-camelized-action-name (cake-lower-camelize cake-action-name))
+      (setq cake-singular-name (cake-singularize cake-plural-name))
+      (setq cake-current-file-type 'view))))
 
 (defun cake-is-controller-file ()
   "Check whether current file is contoroller file."
@@ -533,6 +550,7 @@
   "Set regExp."
   (setq cake-model-regexp (concat cake-app-path "models/\\([^/]+\\)\.php"))
   (setq cake-view-regexp (concat cake-app-path "views/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
+  (setq cake-themed-regexp (concat cake-app-path "views/themed/\\([^/]+\\)/\\([^/]+\\)/\\([^/]+/\\)?\\([^/.]+\\)\\.\\([a-z]+\\)$"))
   (setq cake-controller-regexp (concat cake-app-path "controllers/\\([^/]+\\)_controller\.php$"))
   (setq cake-behavior-regexp (concat cake-app-path "models/behaviors/\\([^/]+\\)\.php$"))
   (setq cake-helper-regexp (concat cake-app-path "views/helpers/\\([^/]+\\)\.php$"))
@@ -1094,7 +1112,8 @@
     (loop for rule in cake-singular-rules do
           (unless (not (string-match (nth 0 rule) str))
             (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))))
+            (return result)))
+    str))
 ;;(cake-singularize "cases")
 
 (defun cake-pluralize (str)
@@ -1104,7 +1123,8 @@
     (loop for rule in cake-plural-rules do
           (unless (not (string-match (nth 0 rule) str))
             (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))))
+            (return result)))
+    str))
 ;;(cake-pluralize "case")
 
 (defun cake-camelize (str)
