@@ -807,13 +807,12 @@
 (defun cake-open-dir (dir &optional recursive)
   "Open directory."
   (interactive)
-  (let (path files)
-    (if (cake-set-app-path)
-        (anything-other-buffer
-         (cake-create-open-dir-anything-sources dir) nil)
-      (message "Can't set app path."))))
+  (if (cake-set-app-path)
+      (anything-other-buffer
+       (cake-create-open-dir-anything-sources dir recursive) nil)
+    (message "Can't set app path.")))
 
-(defun cake-create-open-dir-anything-sources (dir)
+(defun cake-create-open-dir-anything-sources (dir &optional recursive)
   "Careate 'Open dir' anything-sources"
   (let (sources)
     (unless (listp dir)
@@ -828,8 +827,7 @@
                      (display-to-real . (lambda (candidate)
                                           (concat ,cake-app-path ,d candidate)))
                      (type . file))
-                   sources)
-                  ))
+                   sources)))
           (reverse sources))
       (message "Can't set app path."))))
 
@@ -1112,8 +1110,7 @@
     (loop for rule in cake-singular-rules do
           (unless (not (string-match (nth 0 rule) str))
             (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))
-    str))
+            (return result)))))
 ;;(cake-singularize "cases")
 
 (defun cake-pluralize (str)
@@ -1123,8 +1120,7 @@
     (loop for rule in cake-plural-rules do
           (unless (not (string-match (nth 0 rule) str))
             (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))
-    str))
+            (return result)))))
 ;;(cake-pluralize "case")
 
 (defun cake-camelize (str)
