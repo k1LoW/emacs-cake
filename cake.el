@@ -143,6 +143,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Update function anything-c-cake-switch-to-view (themed directory support)
 ;; -.-.-: Update function cake-is-views-dir (themed directory support)
 ;; -.-.-: Refactor code.
 ;; 1.3.2: Update function cake-open-views-dir, cake-open-layouts-dir, cake-open-elements-dir (themed directory support).
@@ -406,6 +407,7 @@
 (defun cake-is-view-file ()
   "Check whether current file is view file."
   (cake-set-app-path)
+  (setq cake-themed-name nil)
   (if (string-match cake-themed-regexp (buffer-file-name))
       (progn
         (setq cake-themed-name (match-string 1 (buffer-file-name)))
@@ -713,26 +715,29 @@
 (defun cake-switch-to-element ()
   "Switch to element. If region is active, make new element file."
   (interactive)
-  (let ((element-name nil))
-    (if (cake-set-app-path)
-        (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
-                (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
-            (if (file-exists-p (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-                (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-              (if (y-or-n-p "Make new file?")
-                  (find-file (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
-                (message (format "Can't find %s" (concat cake-app-path "views/elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
-          (if (not (and (region-active-p)
-                        (y-or-n-p "Can't find element name. Make new file?")))
-              (message "Can't find element name.")
-            (setq element-name (read-string "Element name (no extension): " "element_name"))
-            (if (not element-name)
+  (let ((element-name nil) (themed-path ""))
+    (if (cake-is-view-file)
+        (progn
+          (unless (not cake-themed-name)
+            (setq themed-path (concat "themed/" cake-themed-name "/")))
+          (if (or (string-match "renderElement( *['\"]\\([-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line))
+                  (string-match "element(['\"]\\( *[-a-zA-Z0-9_/\.]+\\)['\"].*)" (cake-get-current-line)))
+              (if (file-exists-p (concat cake-app-path "views/" themed-path "elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+                  (find-file (concat cake-app-path "views/" themed-path "elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+                (if (y-or-n-p "Make new file?")
+                    (find-file (concat cake-app-path "views/" themed-path "elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension))
+                  (message (format "Can't find %s" (concat cake-app-path "views/" themed-path "elements/" (match-string 1 (cake-get-current-line)) "." cake-view-extension)))))
+            (if (not (and (region-active-p)
+                          (y-or-n-p "Can't find element name. Make new file?")))
                 (message "Can't find element name.")
-              (kill-region (point) (mark))
-              (insert (concat "<?php echo $this->element('" element-name "'); ?>"))
-              (find-file (concat cake-app-path "views/elements/" element-name "." cake-view-extension))
-              (yank))))
-      (message "Can't set app path."))))
+              (setq element-name (read-string "Element name (no extension): " "element_name"))
+              (if (not element-name)
+                  (message "Can't find element name.")
+                (kill-region (point) (mark))
+                (insert (concat "<?php echo $this->element('" element-name "'); ?>"))
+                (find-file (concat cake-app-path "views/" themed-path "elements/" element-name "." cake-view-extension))
+                (yank)))))
+      (message "Current buffer is not view."))))
 
 (defun cake-switch-to-javascript ()
   "Switch to javascript."
@@ -1215,25 +1220,45 @@
 
 (defun anything-c-cake-switch-to-view ()
   "Switch to view."
-  (progn
-    (cake-set-app-path)
-    (cond ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
-          ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp"))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
-          ((y-or-n-p "Make new file?")
-           (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
-             (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
-           (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
-          (t (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))))))
+  (let (themed-dir)
+    (progn
+      (cake-set-app-path)
+      (if (and (cake-is-view-file) cake-themed-name)
+          (setq themed-dir (concat "themed/" cake-themed-name "/")))
+      (cond
+       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".ctp")))
+
+       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".ctp")))
+
+       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
+
+       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
+
+       ((y-or-n-p "Make new file?")
+        (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
+          (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
+        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
+       (t (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))))))))
 
 (defun anything-c-cake-switch-to-controller ()
   "Switch to contoroller."
