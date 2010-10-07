@@ -895,7 +895,7 @@
                      (push (concat "views/themed/" x "/") themed-list)))
           (message "%s" themed-list)
           (reverse themed-list))
-      (message "Can't set app path."))))
+      nil)))
 
 (defun cake-open-controllers-dir ()
   "Open contorollers directory."
