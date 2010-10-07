@@ -834,7 +834,7 @@
                      (type . file))
                    sources)))
           (reverse sources))
-      (message "Can't set app path."))))
+      nil)))
 
 (defun cake-directory-files (dir &optional recursive)
   "Get directory files recuresively."
