@@ -24,6 +24,7 @@
 ;;; Code:
 
 ;;require
+(require 'cake)
 (require 'auto-complete)
 
 (defvar ac-cake-index nil
