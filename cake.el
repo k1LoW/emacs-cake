@@ -920,7 +920,7 @@
 (defun cake-open-config-dir ()
   "Open config dir."
   (interactive)
-  (cake-open-dir "config/"))
+  (cake-open-dir "config/" t))
 
 (defun cake-open-layouts-dir ()
   "Open layouts directory."
