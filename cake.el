@@ -143,6 +143,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Fix bug (same name action switching)
 ;; -.-.-: Update function anything-c-cake-switch-to-view (themed directory support)
 ;; -.-.-: Update function cake-is-views-dir (themed directory support)
 ;; -.-.-: Refactor code.
@@ -1220,45 +1221,48 @@
 
 (defun anything-c-cake-switch-to-view ()
   "Switch to view."
-  (let (themed-dir)
+  (let (themed-dir
+        (plural-name cake-plural-name)
+        (action-name cake-action-name)
+        (snake-action-name cake-snake-action-name))
     (progn
       (cake-set-app-path)
       (if (and (cake-is-view-file) cake-themed-name)
           (setq themed-dir (concat "themed/" cake-themed-name "/")))
       (cond
-       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
-        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
-       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".thtml"))
-        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".thtml")))
-       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".ctp"))
-        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-snake-action-name ".ctp")))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir plural-name "/" snake-action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" themed-dir plural-name "/" snake-action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir plural-name "/" snake-action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" themed-dir plural-name "/" snake-action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir plural-name "/" snake-action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" themed-dir plural-name "/" snake-action-name ".ctp")))
 
-       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name "." cake-view-extension))
-        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name "." cake-view-extension)))
-       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".thtml"))
-        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".thtml")))
-       ((file-exists-p (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".ctp"))
-        (find-file (concat cake-app-path "views/" themed-dir cake-plural-name "/" cake-action-name ".ctp")))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir plural-name "/" action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" themed-dir plural-name "/" action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir plural-name "/" action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" themed-dir plural-name "/" action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" themed-dir plural-name "/" action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" themed-dir plural-name "/" action-name ".ctp")))
 
-       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name "." cake-view-extension)))
-       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml"))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".thtml")))
-       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp"))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-snake-action-name ".ctp")))
+       ((file-exists-p (concat cake-app-path "views/" plural-name "/" snake-action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" plural-name "/" snake-action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" plural-name "/" snake-action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" plural-name "/" snake-action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" plural-name "/" snake-action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" plural-name "/" snake-action-name ".ctp")))
 
-       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
-       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml"))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".thtml")))
-       ((file-exists-p (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp"))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name ".ctp")))
+       ((file-exists-p (concat cake-app-path "views/" plural-name "/" action-name "." cake-view-extension))
+        (find-file (concat cake-app-path "views/" plural-name "/" action-name "." cake-view-extension)))
+       ((file-exists-p (concat cake-app-path "views/" plural-name "/" action-name ".thtml"))
+        (find-file (concat cake-app-path "views/" plural-name "/" action-name ".thtml")))
+       ((file-exists-p (concat cake-app-path "views/" plural-name "/" action-name ".ctp"))
+        (find-file (concat cake-app-path "views/" plural-name "/" action-name ".ctp")))
 
        ((y-or-n-p "Make new file?")
-        (unless (file-directory-p (concat cake-app-path "views/" cake-plural-name "/"))
-          (make-directory (concat cake-app-path "views/" cake-plural-name "/")))
-        (find-file (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension)))
-       (t (message (format "Can't find %s" (concat cake-app-path "views/" cake-plural-name "/" cake-action-name "." cake-view-extension))))))))
+        (unless (file-directory-p (concat cake-app-path "views/" plural-name "/"))
+          (make-directory (concat cake-app-path "views/" plural-name "/")))
+        (find-file (concat cake-app-path "views/" plural-name "/" action-name "." cake-view-extension)))
+       (t (message (format "Can't find %s" (concat cake-app-path "views/" plural-name "/" action-name "." cake-view-extension))))))))
 
 (defun anything-c-cake-switch-to-controller ()
   "Switch to contoroller."
