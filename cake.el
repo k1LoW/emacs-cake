@@ -143,6 +143,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Update function some cake-open-*-dir (plugin directory support).
 ;; -.-.-: Fix bug (same name action switching)
 ;; -.-.-: Update function anything-c-cake-switch-to-view (themed directory support)
 ;; -.-.-: Update function cake-is-views-dir (themed directory support)
@@ -869,44 +870,39 @@
 (defun cake-open-models-dir ()
   "Open models directory."
   (interactive)
-  (cake-open-dir "models/"))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "models/") nil))) plugin-list))
+    (push "models/" plugin-list)
+    (cake-open-dir plugin-list)))
 
 (defun cake-open-views-dir ()
   "Open views directory."
   (interactive)
-  (let ((themed-list (cake-find-themed-dir)))
+  (let ((themed-list (cake-find-themed-dir)) (plugin-list (cake-find-plugin-dir)))
     (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
         (progn
           (setq themed-list (mapcar (function (lambda (c) (if c (concat c cake-plural-name "/") nil))) themed-list))
           (push (concat "views/" cake-plural-name "/") themed-list)
           (cake-open-dir themed-list))
-      (push "views/" themed-list)
-      (cake-open-dir themed-list t))))
-
-(defun cake-find-themed-dir ()
-  "Find themed directory. like app/views/themed/m"
-  (let (themed-dir themed-list)
-    (if (and (cake-set-app-path) (file-directory-p (concat cake-app-path "views/themed")))
-        (progn
-          (setq themed-dir (concat cake-app-path "views/themed/"))
-          (loop for x in (directory-files themed-dir)
-                do (unless (or
-                            (not (file-directory-p (concat themed-dir x)))
-                            (string-match "\\.\\.?" x))
-                     (push (concat "views/themed/" x "/") themed-list)))
-          (message "%s" themed-list)
-          (reverse themed-list))
-      nil)))
+      (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "views/") nil))) plugin-list))
+      (push "views/" plugin-list)
+      (cake-open-dir plugin-list t))))
 
 (defun cake-open-controllers-dir ()
   "Open contorollers directory."
   (interactive)
-  (cake-open-dir "controllers/"))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "controllers/") nil))) plugin-list))
+    (push "controllers/" plugin-list)
+    (cake-open-dir plugin-list)))
 
 (defun cake-open-behaviors-dir ()
   "Open behaviors directory."
   (interactive)
-  (cake-open-dir "models/behaviors/"))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "models/behaviors/") nil))) plugin-list))
+    (push "models/behaviors/" plugin-list)
+    (cake-open-dir plugin-list)))
 
 (defun cake-open-helpers-dir ()
   "Open helpers directory."
@@ -916,12 +912,18 @@
 (defun cake-open-components-dir ()
   "Open components directory."
   (interactive)
-  (cake-open-dir "controllers/components/"))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "controllers/components/") nil))) plugin-list))
+    (push "controllers/components/" plugin-list)
+    (cake-open-dir plugin-list)))
 
 (defun cake-open-config-dir ()
   "Open config dir."
   (interactive)
-  (cake-open-dir "config/" t))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "config/") nil))) plugin-list))
+    (push "config/" plugin-list)
+    (cake-open-dir plugin-list t)))
 
 (defun cake-open-layouts-dir ()
   "Open layouts directory."
@@ -942,17 +944,45 @@
 (defun cake-open-js-dir ()
   "Open JavaScript directory."
   (interactive)
-  (cake-open-dir "webroot/js/" t))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "webroot/js/") nil))) plugin-list))
+    (push "webroot/js/" plugin-list)
+    (cake-open-dir plugin-list t)))
 
 (defun cake-open-css-dir ()
   "Open css directory."
   (interactive)
-  (cake-open-dir "webroot/css/" t))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "webroot/css/") nil))) plugin-list))
+    (push "webroot/css/" plugin-list)
+    (cake-open-dir plugin-list t)))
 
 (defun cake-open-tests-dir ()
   "Open tests directory."
   (interactive)
   (cake-open-dir (list "tests/cases/" "tests/fixtures/" "tests/groups/") t))
+
+(defun cake-find-themed-dir ()
+  "Find themed directory. like app/views/themed/m"
+  (cake-find-dir-list "views/themed/"))
+
+(defun cake-find-plugin-dir ()
+  "Find plugin directory. like app/plugins"
+  (cake-find-dir-list "plugins/"))
+
+(defun cake-find-dir-list (dir)
+  "Find directory list. like app/plugins"
+  (let (d l)
+    (if (and (cake-set-app-path) (file-directory-p (concat cake-app-path dir)))
+        (progn
+          (setq d (concat cake-app-path dir))
+          (loop for x in (directory-files d)
+                do (unless (or
+                            (not (file-directory-p (concat d x)))
+                            (string-match "\\.\\.?" x))
+                     (push (concat dir x "/") l)))
+          (reverse l))
+      nil)))
 
 (defvar cake-source-version
   '((name . "CakePHP core version")
