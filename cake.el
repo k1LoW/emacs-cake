@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.2
+;; Version: 1.3.3
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -143,11 +143,12 @@
 ;;    default = "1.3"
 
 ;;; Change Log
-;; -.-.-: Refactor code.
-;; -.-.-: Update function some cake-open-*-dir (plugin directory support).
-;; -.-.-: Fix bug (same name action switching)
-;; -.-.-: Update function anything-c-cake-switch-to-view (themed directory support)
-;; -.-.-: Update function cake-is-views-dir (themed directory support)
+;; 1.3.3: Fix Doc.
+;;        Refactor code.
+;;        Update function some cake-open-*-dir (plugin directory support).
+;;        Fix bug (same name action switching)
+;;        Update function anything-c-cake-switch-to-view (themed directory support)
+;;        Update function cake-is-views-dir (themed directory support)
 ;; 1.3.2: Update function cake-open-views-dir, cake-open-layouts-dir, cake-open-elements-dir (themed directory support).
 ;;        Update function cake-open-dir (multi directory support).
 ;; 1.3.1: Fix doc.
@@ -971,7 +972,7 @@
   (cake-find-dir-list "plugins/"))
 
 (defun cake-find-dir-list (dir)
-  "Find directory list. like app/plugins"
+  "Find directory list."
   (let (d l)
     (if (and (cake-set-app-path) (file-directory-p (concat cake-app-path dir)))
         (progn
