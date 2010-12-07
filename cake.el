@@ -143,11 +143,11 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Refactor code.
 ;; -.-.-: Update function some cake-open-*-dir (plugin directory support).
 ;; -.-.-: Fix bug (same name action switching)
 ;; -.-.-: Update function anything-c-cake-switch-to-view (themed directory support)
 ;; -.-.-: Update function cake-is-views-dir (themed directory support)
-;; -.-.-: Refactor code.
 ;; 1.3.2: Update function cake-open-views-dir, cake-open-layouts-dir, cake-open-elements-dir (themed directory support).
 ;;        Update function cake-open-dir (multi directory support).
 ;; 1.3.1: Fix doc.
@@ -841,14 +841,14 @@
 (defun cake-directory-files (dir &optional recursive)
   "Get directory files recuresively."
   (let
-      ((file-list nil))
+      (file-list file)
     (if (not recursive)
-        (directory-files (concat cake-app-path dir))
+        (remove-if (lambda (x) (equal x "..")) (directory-files (concat cake-app-path dir)))
       (loop for x in (cake-get-recuresive-path-list (concat cake-app-path dir))
             do (progn
                  (string-match (concat cake-app-path dir "\\(.+\\)") x)
                  (push (match-string 1 x) file-list)))
-      file-list)))
+      (remove-if (lambda (x) (equal x "..")) file-list))))
 
 (defun cake-get-recuresive-path-list (file-list)
   "Get file path list recuresively."
