@@ -895,7 +895,7 @@
   (let ((plugin-list (cake-find-plugin-dir)))
     (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "controllers/") nil))) plugin-list))
     (push "controllers/" plugin-list)
-    (cake-open-dir plugin-list)))
+    (cake-open-dir plugin-list t)))
 
 (defun cake-open-behaviors-dir ()
   "Open behaviors directory."
