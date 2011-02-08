@@ -1,7 +1,7 @@
 ;;;cake.el ---  CakePHP Minor Mode
 ;; -*- Mode: Emacs-Lisp -*-
 
-;; Copyright (C) 2008-2010 by 101000code/101000LAB
+;; Copyright (C) 2008-2011 by 101000code/101000LAB
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -143,6 +143,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; -.-.-: Support recursive controllers/ directory
 ;; 1.3.3: Fix Doc.
 ;;        Refactor code.
 ;;        Update function some cake-open-*-dir (plugin directory support).
@@ -892,10 +893,12 @@
 (defun cake-open-controllers-dir ()
   "Open contorollers directory."
   (interactive)
-  (let ((plugin-list (cake-find-plugin-dir)))
+  (let ((plugin-list (cake-find-plugin-dir))
+        (controller-list (cake-find-controller-dir)))
     (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "controllers/") nil))) plugin-list))
-    (push "controllers/" plugin-list)
-    (cake-open-dir plugin-list t)))
+    (setq controller-list (append controller-list plugin-list))
+    (push "controllers/" controller-list)
+    (cake-open-dir (remove-if (lambda (x) (string-match "components" x)) controller-list))))
 
 (defun cake-open-behaviors-dir ()
   "Open behaviors directory."
@@ -966,6 +969,10 @@
 (defun cake-find-themed-dir ()
   "Find themed directory. like app/views/themed/m"
   (cake-find-dir-list "views/themed/"))
+
+(defun cake-find-controller-dir ()
+  "Find plugin directory. like app/controllers"
+  (remove-if (lambda (x) (string-match "components" x)) (cake-find-dir-list "contollers/")))
 
 (defun cake-find-plugin-dir ()
   "Find plugin directory. like app/plugins"
