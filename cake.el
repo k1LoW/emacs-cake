@@ -911,7 +911,10 @@
 (defun cake-open-helpers-dir ()
   "Open helpers directory."
   (interactive)
-  (cake-open-dir "views/helpers/"))
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "views/helpers/") nil))) plugin-list))
+    (push "views/helpers/" plugin-list)
+    (cake-open-dir plugin-list)))
 
 (defun cake-open-components-dir ()
   "Open components directory."
