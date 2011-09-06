@@ -74,12 +74,12 @@
           " | xargs grep '[^_]function' "
           "--with-filename"))
 
-(defvar ac-source-cake
+(ac-define-source cake
   '((init . (lambda () (unless ac-cake-index
                          (ac-cake-build-index))))
     (candidates . ac-cake-index)
-    (requires . 3))
-  "Source for CakePHP")
+    (requires . 3)
+    (symbol . "f")))
 
 ;; Hook
 (add-hook 'cake-hook 'ac-cake-setup)
