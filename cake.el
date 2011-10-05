@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.3
+;; Version: 1.3.4
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -94,6 +94,8 @@
 ;;    Open helpers directory.
 ;;  `cake-open-components-dir'
 ;;    Open components directory.
+;;  `cake-open-libs-dir'
+;;    Open libs dir.
 ;;  `cake-open-config-dir'
 ;;    Open config dir.
 ;;  `cake-open-layouts-dir'
@@ -143,7 +145,9 @@
 ;;    default = "1.3"
 
 ;;; Change Log
-;; -.-.-: Support recursive controllers/ directory
+;; 1.3.4: Change cake-set-default-keymap.
+;;        New function cake-open-libs-dir.
+;;        Support recursive controllers/ directory
 ;; 1.3.3: Fix Doc.
 ;;        Refactor code.
 ;;        Update function some cake-open-*-dir (plugin directory support).
@@ -382,11 +386,12 @@
           (define-key map "\C-cb" 'cake-switch-to-file-history)
           (define-key map "\C-cM" 'cake-open-models-dir)
           (define-key map "\C-cV" 'cake-open-views-dir)
+          (define-key map "\C-u\C-cl" 'cake-open-layouts-dir)
           (define-key map "\C-cC" 'cake-open-controllers-dir)
           (define-key map "\C-cB" 'cake-open-behaviors-dir)
           (define-key map "\C-cH" 'cake-open-helpers-dir)
           (define-key map "\C-cP" 'cake-open-components-dir)
-          (define-key map "\C-cL" 'cake-open-layouts-dir)
+          (define-key map "\C-cL" 'cake-open-libs-dir)
           (define-key map "\C-cE" 'cake-open-elements-dir)
           (define-key map "\C-cJ" 'cake-open-js-dir)
           (define-key map "\C-cS" 'cake-open-css-dir)
@@ -923,6 +928,14 @@
     (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "controllers/components/") nil))) plugin-list))
     (push "controllers/components/" plugin-list)
     (cake-open-dir plugin-list)))
+
+(defun cake-open-libs-dir ()
+  "Open libs dir."
+  (interactive)
+  (let ((plugin-list (cake-find-plugin-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "libs/") nil))) plugin-list))
+    (push "libs/" plugin-list)
+    (cake-open-dir plugin-list t)))
 
 (defun cake-open-config-dir ()
   "Open config dir."
