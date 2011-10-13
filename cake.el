@@ -145,6 +145,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.3.5: Change cake-set-default-keymap.
 ;; 1.3.4: Change cake-set-default-keymap.
 ;;        New function cake-open-libs-dir.
 ;;        Support recursive controllers/ directory
@@ -386,7 +387,7 @@
           (define-key map "\C-cb" 'cake-switch-to-file-history)
           (define-key map "\C-cM" 'cake-open-models-dir)
           (define-key map "\C-cV" 'cake-open-views-dir)
-          (define-key map "\C-u\C-cl" 'cake-open-layouts-dir)
+          (define-key map "\C-c\C-l" 'cake-open-layouts-dir)
           (define-key map "\C-cC" 'cake-open-controllers-dir)
           (define-key map "\C-cB" 'cake-open-behaviors-dir)
           (define-key map "\C-cH" 'cake-open-helpers-dir)
@@ -397,7 +398,7 @@
           (define-key map "\C-cS" 'cake-open-css-dir)
           (define-key map "\C-cT" 'cake-open-tests-dir)
           (define-key map "\C-c\C-g" 'cake-open-config-dir)
-          (define-key map "\C-c\C-l" 'cake-tail-log)
+          (define-key map "\C-c\C-t" 'cake-tail-log)
           ;; anything-functions
           (define-key map "\C-cl" 'anything-c-cake-anything-only-source-cake)
           (define-key map "\C-co" 'anything-c-cake-anything-only-function)
