@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.4
+;; Version: 1.3.6
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -145,6 +145,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.3.6: Update function cake-open-tests-dir
 ;; 1.3.5: Change cake-set-default-keymap.
 ;; 1.3.4: Change cake-set-default-keymap.
 ;;        New function cake-open-libs-dir.
@@ -981,7 +982,15 @@
 (defun cake-open-tests-dir ()
   "Open tests directory."
   (interactive)
-  (cake-open-dir (list "tests/cases/" "tests/fixtures/" "tests/groups/") t))
+  (let ((tests nil)
+        (plugin-list (cake-find-plugin-dir)))
+    (setq tests (append (mapcar (function (lambda (c) (if c (concat c "tests/groups/") nil))) plugin-list) tests))
+    (setq tests (append (mapcar (function (lambda (c) (if c (concat c "tests/fixtures/") nil))) plugin-list) tests))
+    (setq tests (append (mapcar (function (lambda (c) (if c (concat c "tests/cases/") nil))) plugin-list) tests))
+    (push "tests/groups/" tests)
+    (push "tests/fixtures/" tests)
+    (push "tests/cases/" tests)
+    (cake-open-dir tests t)))
 
 (defun cake-find-themed-dir ()
   "Find themed directory. like app/views/themed/m"
