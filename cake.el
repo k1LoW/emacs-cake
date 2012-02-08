@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.6
+;; Version: 1.3.7
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -1194,11 +1194,14 @@
 ;;(cake-pluralize "case")
 
 (defun cake-camelize (str)
-  "Camelize snake_case str"
+    "Camelize snake_case str"
   (let ((camelize-str str) (case-fold-search nil))
+    (setq camelize-str (replace-regexp-in-string
+     "_" " "
+     camelize-str))
     (setq camelize-str (capitalize (downcase camelize-str)))
     (replace-regexp-in-string
-     "_" ""
+     " " ""
      camelize-str)))
 ;;(cake-camelize "cake_camelize")
 
