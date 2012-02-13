@@ -339,7 +339,8 @@
     ("\\(c\\)hildren$" "\\1\\2hild")
     ("\\(n\\)ews$" "\\1\\2ews")
     ("^\\(.*us\\)$" "\\1")
-    ("s$" ""))
+    ("s$" "")
+    ("$" ""))
   "cakeSingularRules")
 
 (provide 'cake-inflector)
