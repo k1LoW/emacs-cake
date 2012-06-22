@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.8
+;; Version: 1.3.9
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org, http://trac.codecheck.in
 
@@ -86,6 +86,8 @@
 ;;    Open models directory.
 ;;  `cake-open-views-dir'
 ;;    Open views directory.
+;;  `cake-open-all-views-dir'
+;;    Open all views directory.
 ;;  `cake-open-controllers-dir'
 ;;    Open contorollers directory.
 ;;  `cake-open-behaviors-dir'
@@ -145,6 +147,8 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.3.9: Backport from cake2.el 1.0.8 cake-open-all-views-dir.
+;;        Improved cake-open-layouts-dir, cake-open-elements-dir
 ;; 1.3.8: Backport from cake2.el 1.0.6 cake-open-dir.
 ;; 1.3.6: Update function cake-open-tests-dir
 ;; 1.3.5: Change cake-set-default-keymap.
@@ -389,6 +393,7 @@
           (define-key map "\C-cb" 'cake-switch-to-file-history)
           (define-key map "\C-cM" 'cake-open-models-dir)
           (define-key map "\C-cV" 'cake-open-views-dir)
+          (define-key map "\C-u\C-cV" 'cake-open-all-views-dir)
           (define-key map "\C-c\C-l" 'cake-open-layouts-dir)
           (define-key map "\C-cC" 'cake-open-controllers-dir)
           (define-key map "\C-cB" 'cake-open-behaviors-dir)
@@ -889,14 +894,19 @@
   "Open views directory."
   (interactive)
   (let ((themed-list (cake-find-themed-dir)) (plugin-list (cake-find-plugin-dir)))
-    (if (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file))
-        (progn
-          (setq themed-list (mapcar (function (lambda (c) (if c (concat c cake-plural-name "/") nil))) themed-list))
-          (push (concat "views/" cake-plural-name "/") themed-list)
-          (cake-open-dir themed-list))
-      (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "views/") nil))) plugin-list))
-      (push "views/" plugin-list)
-      (cake-open-dir plugin-list t "helpers"))))
+    (if (not (or (cake-is-model-file) (cake-is-controller-file) (cake-is-view-file)))
+        (cake-open-all-views-dir)
+      (setq themed-list (mapcar (function (lambda (c) (if c (concat c cake-plural-name "/") nil))) themed-list))
+      (push (concat "views/" cake-plural-name "/") themed-list)
+      (cake-open-dir themed-list))))
+
+(defun cake-open-all-views-dir ()
+  "Open all views directory."
+  (interactive)
+  (let ((themed-list (cake-find-themed-dir)) (plugin-list (cake-find-plugin-dir)))
+  (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "views/") nil))) plugin-list))
+  (push "views/" plugin-list)
+  (cake-open-dir plugin-list t "helpers")))
 
 (defun cake-open-controllers-dir ()
   "Open contorollers directory."
@@ -951,18 +961,26 @@
 (defun cake-open-layouts-dir ()
   "Open layouts directory."
   (interactive)
-  (let ((themed-list (cake-find-themed-dir)))
+  (let ((layouts)
+        (plugin-list (cake-find-plugin-dir))
+        (themed-list (cake-find-themed-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "views/layouts/") nil))) plugin-list))
     (setq themed-list (mapcar (function (lambda (c) (if c (concat c "layouts/") nil))) themed-list))
-    (push (concat "views/layouts/") themed-list)
-    (cake-open-dir themed-list t)))
+    (setq layouts (append plugin-list themed-list))
+    (push (concat "views/layouts/") layouts)
+    (cake-open-dir layouts t)))
 
 (defun cake-open-elements-dir ()
   "Open elements directory."
   (interactive)
-  (let ((themed-list (cake-find-themed-dir)))
+  (let ((elements)
+        (plugin-list (cake-find-plugin-dir))
+        (themed-list (cake-find-themed-dir)))
+    (setq plugin-list (mapcar (function (lambda (c) (if c (concat c "views/elements/") nil))) plugin-list))
     (setq themed-list (mapcar (function (lambda (c) (if c (concat c "elements/") nil))) themed-list))
-    (push (concat "views/elements/") themed-list)
-    (cake-open-dir themed-list t)))
+    (setq elements (append plugin-list themed-list))
+    (push (concat "views/elements/") elements)
+    (cake-open-dir elements t)))
 
 (defun cake-open-js-dir ()
   "Open JavaScript directory."
