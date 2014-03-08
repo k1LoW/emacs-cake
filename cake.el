@@ -20,7 +20,7 @@
 ;; Version: 1.4.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: https://github.com/k1LoW/emacs-cake, http://code.101000lab.org, http://trac.codecheck.in
-;; Package-Requires: ((cake-infrector))
+;; Package-Requires: ((cake-infrector "1.0.1"))
 
 ;; Thanks to rubikitch for using header-name(anything.el) param advice.(1.0.5)
 ;; Thanks to xcezx for using tail.el patch.(1.0.1)
