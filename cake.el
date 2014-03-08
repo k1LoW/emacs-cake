@@ -1,7 +1,7 @@
 ;;; cake.el ---  CakePHP Minor Mode
 ;; -*- Mode: Emacs-Lisp -*-
 
-;; Copyright (C) 2008-2011 by 101000code/101000LAB
+;; Copyright (C) 2008-2014 by 101000code/101000LAB
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.3.9
+;; Version: 1.4.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
-;; URL: http://code.101000lab.org, http://trac.codecheck.in
+;; URL: https://github.com/k1LoW/emacs-cake, http://code.101000lab.org, http://trac.codecheck.in
+;; Package-Requires: ((cake-infrector))
 
 ;; Thanks to rubikitch for using header-name(anything.el) param advice.(1.0.5)
 ;; Thanks to xcezx for using tail.el patch.(1.0.1)
@@ -147,6 +148,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.4.0: Move cake-infrector.el to k1LoW/emacs-cake-infrector
 ;; 1.3.9: Backport from cake2.el 1.0.8 cake-open-all-views-dir.
 ;;        Improved cake-open-layouts-dir, cake-open-elements-dir
 ;; 1.3.8: Backport from cake2.el 1.0.6 cake-open-dir.
