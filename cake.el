@@ -117,10 +117,6 @@
 ;;    Insert CakePHP code.
 ;;  `cake-tail-log'
 ;;    Show log by "tail".
-;;  `cake-singularize'
-;;    Singularize str
-;;  `cake-pluralize'
-;;    Pluralize str
 ;;  `anything-c-cake-anything-only-source-cake'
 ;;    anything only anything-c-source-cake and anything-c-source-cake-model-function.
 ;;  `anything-c-cake-anything-only-function'
