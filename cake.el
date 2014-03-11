@@ -148,6 +148,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.4.1: Remove cake string functions
 ;; 1.4.0: Move cake-infrector.el to k1LoW/emacs-cake-infrector
 ;; 1.3.9: Backport from cake2.el 1.0.8 cake-open-all-views-dir.
 ;;        Improved cake-open-layouts-dir, cake-open-elements-dir
@@ -1193,65 +1194,6 @@
               (start-process "tail" logbuffer "tail" "-f" (concat cake-app-path "tmp/logs/" log)))
             (switch-to-buffer logbuffer))
         (message "Can't set log.")))))
-
-(defun cake-singularize (str)
-  "Singularize str"
-  (interactive)
-  (let ((result str))
-    (loop for rule in cake-singular-rules do
-          (unless (not (string-match (nth 0 rule) str))
-            (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))))
-;;(cake-singularize "cases")
-
-(defun cake-pluralize (str)
-  "Pluralize str"
-  (interactive)
-  (let ((result str))
-    (loop for rule in cake-plural-rules do
-          (unless (not (string-match (nth 0 rule) str))
-            (setq result (replace-match (nth 1 rule) nil nil str))
-            (return result)))))
-;;(cake-pluralize "case")
-
-(defun cake-camelize (str)
-    "Camelize snake_case str"
-  (let ((camelize-str str) (case-fold-search nil))
-    (setq camelize-str (replace-regexp-in-string
-     "_" " "
-     camelize-str))
-    (setq camelize-str (capitalize (downcase camelize-str)))
-    (replace-regexp-in-string
-     " " ""
-     camelize-str)))
-;;(cake-camelize "cake_camelize")
-
-(defun cake-lower-camelize (str)
-  "lowerCamelize snake_case str"
-  (let ((head-str "") (tail-str "") (case-fold-search nil))
-    (if (string-match "^\\([a-z]+_\\)\\([a-z0-9_]*\\)" (downcase str))
-        (progn
-          (setq head-str (match-string 1 (downcase str)))
-          (setq tail-str (match-string 2 (capitalize str)))
-          (if (string-match "_" head-str)
-              (setq head-str (replace-match "" t nil head-str)))
-          (while (string-match "_" tail-str)
-            (setq tail-str (replace-match "" t nil tail-str)))
-          (concat head-str tail-str))
-      str)))
-;;(cake-lower-camelize "cake_lower_camelize")
-
-(defun cake-snake (str) ;;copied from rails-lib.el
-  "Change snake_case."
-  (let ((case-fold-search nil))
-    (downcase
-     (replace-regexp-in-string
-      "\\([A-Z]+\\)\\([A-Z][a-z]\\)" "\\1_\\2"
-      (replace-regexp-in-string
-       "\\([a-z\\d]\\)\\([A-Z]\\)" "\\1_\\2"
-       str)))))
-;;(cake-snake "CakeSnake")
-;;(cake-snake "CCakeSnake")
 
 ;;; anything sources and functions
 
