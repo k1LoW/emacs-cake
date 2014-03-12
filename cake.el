@@ -1,4 +1,4 @@
-;;; cake.el ---  CakePHP Minor Mode
+;;; cake.el --- CakePHP Minor Mode
 ;; -*- Mode: Emacs-Lisp -*-
 
 ;; Copyright (C) 2008-2014 by 101000code/101000LAB
@@ -19,8 +19,8 @@
 
 ;; Version: 1.4.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
-;; URL: https://github.com/k1LoW/emacs-cake, http://code.101000lab.org, http://trac.codecheck.in
-;; Package-Requires: ((cake-infrector "1.1.0") (historyf "0.0.8") (anything "1.3.9"))
+;; URL: https://github.com/k1LoW/emacs-cake
+;; Package-Requires: ((cake-inflector "1.1.0") (historyf "0.0.8") (anything "1.3.9"))
 
 ;; Thanks to rubikitch for using header-name(anything.el) param advice.(1.0.5)
 ;; Thanks to xcezx for using tail.el patch.(1.0.1)
@@ -278,6 +278,7 @@
 
 ;;(global-set-key "\C-c\C-v" 'cake)
 
+;;;###autoload
 (define-minor-mode cake
   "CakePHP minor mode."
   :lighter " Cake"
@@ -290,10 +291,11 @@
         (run-hooks 'cake-hook))
     nil))
 
-(if (fboundp 'define-global-minor-mode)
-    (define-global-minor-mode global-cake
-      cake cake-maybe
-      :group 'cake))
+;;;###autoload
+(when (fboundp 'define-global-minor-mode)
+  (define-global-minor-mode global-cake
+    cake cake-maybe
+    :group 'cake))
 
 (defun cake-maybe ()
   "What buffer `cake' prefers."
