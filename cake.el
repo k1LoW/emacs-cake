@@ -17,11 +17,12 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.4.1
+;; Version: 1.4.2
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: https://github.com/k1LoW/emacs-cake
 ;; Package-Requires: ((cake-inflector "1.1.0") (historyf "0.0.8") (anything "1.3.9"))
 
+;; Thanks to purcell for modifing melpla patch.(1.4.2)
 ;; Thanks to rubikitch for using header-name(anything.el) param advice.(1.0.5)
 ;; Thanks to xcezx for using tail.el patch.(1.0.1)
 ;; Thanks to custar for "search app path" idea.(0.1.6)
@@ -144,6 +145,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.4.2: Add yasnippet dir setting. (purcell patch)
 ;; 1.4.1: Remove cake string functions
 ;; 1.4.0: Move cake-infrector.el to k1LoW/emacs-cake-infrector
 ;; 1.3.9: Backport from cake2.el 1.0.8 cake-open-all-views-dir.
@@ -1551,6 +1553,19 @@
     (anything (list anything-c-source-cake-po
                     anything-c-source-cake-po-not-found)
               initial-pattern "Find Msgid And Msgstr: " nil)))
+
+(defconst cake-snippets-dir (file-name-directory (or (buffer-file-name)
+                                                    load-file-name)))
+
+;;;###autoload
+(defun cake-snippets-initialize ()
+  (let ((snip-dir (expand-file-name "snippets" cake-snippets-dir)))
+    (add-to-list 'yas-snippet-dirs snip-dir t)
+    (yas-load-directory snip-dir)))
+
+;;;###autoload
+(eval-after-load 'yasnippet
+   '(cake-snippets-initialize))
 
 ;; mode provide
 (provide 'cake)
