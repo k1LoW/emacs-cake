@@ -1,4 +1,5 @@
-#name : Mock
+# name : Mock
+# condition: cake
 # --
 /**
  * Mock

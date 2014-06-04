@@ -1,3 +1,4 @@
-#name : $this->Html->css(...)
+# name : $this->Html->css(...)
+# condition: cake
 # --
 \$this->Html->css('${1:css_path}');

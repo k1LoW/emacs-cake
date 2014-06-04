@@ -1,3 +1,4 @@
-#name : $form->submit(__('Submit',true));
+# name : $form->submit(__('Submit',true));
+# condition: cake
 # --
 \$form->submit(__('${1:Submit}',true));

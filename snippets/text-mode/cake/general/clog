@@ -1,3 +1,4 @@
-#name : $this->log(...,LOG_DEBUG);
+# name : $this->log(...,LOG_DEBUG);
+# condition: cake
 # --
 \$this->log($0,LOG_DEBUG);

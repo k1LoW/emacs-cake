@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 1.4.2
+;; Version: 1.4.3
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: https://github.com/k1LoW/emacs-cake
 ;; Package-Requires: ((cake-inflector "1.1.0") (historyf "0.0.8") (anything "1.3.9"))
@@ -145,6 +145,7 @@
 ;;    default = "1.3"
 
 ;;; Change Log
+;; 1.4.3: Update snippets
 ;; 1.4.2: Add yasnippet dir setting. (purcell patch)
 ;; 1.4.1: Remove cake string functions
 ;; 1.4.0: Move cake-infrector.el to k1LoW/emacs-cake-infrector

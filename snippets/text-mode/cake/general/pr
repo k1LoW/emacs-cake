@@ -1,3 +1,4 @@
-#name : pr(...)
+# name : pr(...)
+# condition: cake
 # --
 pr($0);

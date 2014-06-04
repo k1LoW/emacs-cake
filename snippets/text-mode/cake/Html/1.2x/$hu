@@ -1,3 +1,4 @@
-#name : $html->url(...)
+# name : $html->url(...)
+# condition: cake
 # --
 \$html->url(${1:'url_path'});

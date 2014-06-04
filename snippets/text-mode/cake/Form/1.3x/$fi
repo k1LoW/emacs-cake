@@ -1,3 +1,4 @@
-#name : $this->Form->input(...)
+# name : $this->Form->input(...)
+# condition: cake
 # --
 \$this->Form->input('${1:field_name}', array('type' => '${2:text}'${3:}));

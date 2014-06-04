@@ -1,3 +1,4 @@
-#name : $this->Html->image(...)
+# name : $this->Html->image(...)
+# condition: cake
 # --
 \$this->Html->image('${1:image_path}', array(${2:param}));
